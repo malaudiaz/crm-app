@@ -11,12 +11,51 @@ export default function PartnerForm() {
   const [open, setOpen] = useState(false);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [records, setRecords] = useState([]);
+  const [selected, setSelected] = useState([]);
   const toggleToolTip = () => setTooltipOpen(!tooltipOpen);
   const closeModal = () => setOpen(!open);
 
   const addContact = (contacts) => {
-    setRecords(contacts);
+    let tmp = [];
+
+    contacts.map( (contact) => {
+        let found = records.find(e => e.id === contact.id);
+        if (!found) {
+            tmp.push(contact);
+        }
+    })
+    const tempList = records.concat(tmp);
+
+    setRecords(tempList);
+    setOpen(false);
   }
+
+  const onItemCheck = (e, item) => {
+    let tempList = records;
+    tempList.map((row) => {
+      if (row.id === item.id) {
+        row.selected = e.target.checked;
+      }
+      return row;
+    });
+
+    setRecords(tempList);
+    selected = records.filter((e) => e.selected);
+    setSelected(selected);
+  };
+
+  const onDelete = (event, row) => {
+    event.preventDefault();
+    
+    let item = records.find(e => e.id === row.id);
+    let tmp = [];
+    records.map( (record) => {
+        if (record.id !== item.id) {
+            tmp.push(record);
+        }
+    });
+    setRecords(tmp);
+  };
 
   return (
     <div style={{ padding: "8px" }}>
@@ -43,7 +82,7 @@ export default function PartnerForm() {
         <Table bordered>
           <thead>
             <tr>
-              <th style={{width: "10px", textAlign: "center"}}>
+              <th style={{width: "10p%", textAlign: "center"}}>
                 <span className="custom-checkbox">
                   <input type="checkbox" id="selectAll" disabled />
                   <label htmlFor="selectAll"></label>
@@ -54,30 +93,30 @@ export default function PartnerForm() {
                   {title}
                 </th>
               ))}
-              <th style={{textAlign: "center"}}>Acciones</th>
+              <th style={{textAlign: "center", width: "10%"}}>Acción</th>
             </tr>
           </thead>
           <tbody>
             {records.length > 0 && records.map((row, i) => (
               <tr key={i}>
-                <td>
+                <td style={{width: "10p%", textAlign: "center"}}>
                   <span className="custom-checkbox">
                     <input
                       type="checkbox"
-                      id={`rowcheck` + i}
+                      id={`check` + i}
                       checked={row.selected}
                       onChange={(event) => onItemCheck(event, row)}
                     />
-                    <label htmlFor={`rowcheck` + i}></label>
+                    <label htmlFor={`check` + i}></label>
                   </span>
                 </td>
                 {columns.map((col, j) => (
                   <td key={j}>{row[col.accessor]}</td>
                 ))}
-                <td>
+                <td style={{width: "10p%", textAlign: "center"}}>
                     <a
                         className={row.selected ? "delete" : "disabled"}
-                        // onClick={onDelete}
+                        onClick={(event) => onDelete(event, row)}
                     >
                         <i
                             className="bi bi-trash-fill"

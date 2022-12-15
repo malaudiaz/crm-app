@@ -8,13 +8,14 @@ import {
   Row,
   InputGroup,
   Input,
-  InputGroupText
+  InputGroupText,
 } from "reactstrap";
 import Pagination from "../Core/Pagination";
 import axios from "axios";
 import swal from "sweetalert";
 
-export default function ListContact({ columns, onClose }) {
+export default function ListContact({ columns, onClose, addContact }) {
+    
   const [loading, setLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const [records, setRecords] = useState([]);
@@ -22,8 +23,12 @@ export default function ListContact({ columns, onClose }) {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [selected, setSelected] = useState([]);
-  const [findMode, setFindMode] = useState(false);
+  const [findMode, setFindMode] = useState(true);
   const [params, setParams] = useState("");
+  const [filter, setFilter] = useState({
+    criteria_key: "name",
+    criteria_value: "",
+  });
   const rowsPerPage = 5;
   const mounted = useRef(false);
 
@@ -80,43 +85,75 @@ export default function ListContact({ columns, onClose }) {
     setSelected(selected);
   };
 
-  const Find = () => {
+  const onFind = () => {
     let condition = "";
-    if (filter.key != "" && filter.value != "") {
-      condition =
-        "&criteria_key=" +
-        filter.criteria_key +
-        "&criteria_value=" +
-        filter.criteria_value;
+
+    if (findMode) {
+        if (filter.key != "" && filter.value != "") {
+            condition =
+                "&criteria_key=" +
+                filter.criteria_key +
+                "&criteria_value=" +
+                filter.criteria_value;
+
+            setFindMode(false);
+        }
     }
     setParams(condition);
-    setFindMode(true);
     setReload(true);
+  };
+
+  const onAccept = () => {
+    selected.map( (sel) => {sel.selected = false})
+    addContact(selected);
+  };
+  
+  const handleChange = (event) => {
+    const { target } = event;
+    const value = target.type === "checkbox" ? target.checked : target.value;
+    const { name } = target;
+
+    setFilter({
+      ...filter,
+      [name]: value,
+    });
   };  
 
   return (
     <div style={{ padding: "8px" }}>
       <ModalHeader toggle={onClose}>Seleccionar Contácto</ModalHeader>
       <ModalBody>
-        <Row style={{ display: "flex", alignItems: "flex-end", paddingBottom: "8px" }}>
-            <InputGroup size="sm">
-                <Input name="" placeholder="Buscar por Nombre"/>
-                <Button color="primary" onClick={Find}>
-                    <i className={!findMode ? "bi bi-search" : "bi bi-x"}></i>
-                </Button>
-            </InputGroup>
+        <Row
+          style={{
+            display: "flex",
+            alignItems: "flex-end",
+            paddingBottom: "8px",
+          }}
+        >
+          <InputGroup size="sm">
+            <Input
+              name="criteria_value"
+              placeholder="Buscar por Nombre"
+              onChange={(e) => {
+                handleChange(e);
+              }}
+            />
+            <Button color="primary" onClick={onFind}>
+              <i className={findMode ? "bi bi-search" : "bi bi-x"}></i>
+            </Button>
+          </InputGroup>
         </Row>
         <Table bordered>
           <thead>
             <tr>
-              <th style={{width: "10%"}}>
+              <th style={{ width: "10%" }}>
                 <span className="custom-checkbox">
                   <input type="checkbox" id="selectAll" disabled />
                   <label htmlFor="selectAll"></label>
                 </span>
               </th>
               {columns.map(({ id, title, accessor }, idx) => (
-                <th scope="col" key={idx} style={{width: "90%"}}>
+                <th scope="col" key={idx} style={{ width: "90%" }}>
                   {title}
                 </th>
               ))}
@@ -125,7 +162,7 @@ export default function ListContact({ columns, onClose }) {
           <tbody>
             {records.map((row, i) => (
               <tr key={i}>
-                <td style={{width: "10%", textAlign: "center"}}>
+                <td style={{ width: "10%", textAlign: "center" }}>
                   <span className="custom-checkbox">
                     <input
                       type="checkbox"
@@ -137,7 +174,9 @@ export default function ListContact({ columns, onClose }) {
                   </span>
                 </td>
                 {columns.map((col, j) => (
-                  <td key={j} style={{width: "90%"}}>{row[col.accessor]}</td>
+                  <td key={j} style={{ width: "90%" }}>
+                    {row[col.accessor]}
+                  </td>
                 ))}
               </tr>
             ))}
@@ -156,7 +195,7 @@ export default function ListContact({ columns, onClose }) {
         <Button type="button" onClick={onClose} color="secondary">
           <i className="bi bi-x-circle"></i> Cerrar
         </Button>
-        <Button type="submit" color="primary">
+        <Button type="button" onClick={onAccept} color="primary">
           <i className="bi bi-check2-circle"></i> Aceptar
         </Button>
       </ModalFooter>
