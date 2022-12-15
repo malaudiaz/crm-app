@@ -19,7 +19,7 @@ export default function Table({records, columns, onItemCheck, onEdit, onDelete})
                             {title}
                         </th>
                     ))}
-                    <th>Actions</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>

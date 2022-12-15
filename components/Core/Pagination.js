@@ -44,7 +44,7 @@ const Pagination = props => {
     return(
         <div className="clearfix">
             <div className="hint-text">
-                Mostrando <b>{currentPage*rowsPerPage-rowsPerPage+1}</b> - {currentPage*rowsPerPage-rowsPerPage+3} de <b>{totalCount}</b> Registros
+                Mostrando <b>{currentPage*rowsPerPage-rowsPerPage+1}</b> - {currentPage*rowsPerPage-rowsPerPage+rowsPerPage} de <b>{totalCount}</b> Registros
             </div>
             <ul className="pagination">
                 <li onClick={() => onFirts()} className={currentPage==1 ? "page-item disabled" : "page-item"}>

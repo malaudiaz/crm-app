@@ -21,10 +21,10 @@ import swal from "sweetalert";
 const columns = [
   { id: 1, title: "Número", accessor: "number" },
   { id: 2, title: "Cliente", accessor: "partner" },
-  { id: 3, title: "Aprobado Inicio", accessor: "initial_aproved_import" },
-  { id: 4, title: "Aprobado", accessor: "real_aproved_import" },
-  { id: 5, title: "Importe", accessor: "real_import" },
-  { id: 6, title: "Firmado", accessor: "sign_by" },
+  { id: 3, title: "Contacto", accessor: "contact" },
+  { id: 4, title: "Importe x Ejecutar", accessor: "real_import" },
+  { id: 5, title: "Firmado por", accessor: "sign_by" },
+  { id: 6, title: "Fecha de Firma", accessor: "sign_date"}
 ];
 
 export default function List({ user }) {
@@ -109,7 +109,7 @@ export default function List({ user }) {
       if (res.status === 200) {
         swal(
           "Operación Exitosa",
-          "El contacto se ha creado con éxito",
+          "El contrato se ha creado con éxito",
           "success"
         );
         setOpenAdd(false);
@@ -126,14 +126,14 @@ export default function List({ user }) {
     selectedList.map(async (row) => {
       const url = `/api/contracts/update?id=${row.id}`
       try {
-        await axios.put(url, contact);
+        await axios.put(url, contract);
         setLoading(false);
       } catch (errors) {
         swal("Error", "Ha ocurrido un error con la API", "error");
       }
 
       setOpenEdit(false);
-      swal("Operación Exitosa", "Cambios en contracto guardados con éxito", "success");
+      swal("Operación Exitosa", "Cambios en contrato guardados con éxito", "success");
       setReload(true);
     });
   };
@@ -151,7 +151,7 @@ export default function List({ user }) {
         swal("Error", "Ha ocurrido un error con la API", "error");
       }
       setOpenDelete(false);
-      swal("Operación Exitosa", "Contacto eliminado con éxito", "success");
+      swal("Operación Exitosa", "Contrato eliminado con éxito", "success");
       setReload(true);
     });
   };

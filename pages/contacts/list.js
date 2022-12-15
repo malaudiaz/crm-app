@@ -105,7 +105,7 @@ export default function List({ user }) {
       if (res.status === 200) {
         swal(
           "Operación Exitosa",
-          "El cliente se ha creado con éxito",
+          "El contacto se ha creado con éxito",
           "success"
         );
         setOpenAdd(false);
@@ -146,7 +146,7 @@ export default function List({ user }) {
       await axios
         .delete(url)
         .then((res) => {
-          swal("Operación Exitosa", "Cliente eliminado con éxito", "success");
+          swal("Operación Exitosa", "Contacto eliminado con éxito", "success");
           setLoading(false);
           setOpenDelete(false);
           setReload(true);
