@@ -13,15 +13,8 @@ export async function middleware(request) {
       jwt,
       new TextEncoder().encode(process.env.TOKEN_SECRET)
     );
-    
-    console.log({ payload });
-
     return NextResponse.next();
-    
   } catch (error) {   
-
-    console.log(error);   
-
     return NextResponse.redirect(new URL("/users/login", request.url));
   }
 

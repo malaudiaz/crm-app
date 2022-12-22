@@ -18,20 +18,19 @@ export default function EditContactForm({ record, onEdit, onClose }) {
   const [contact, setContact] = useState({
     id: "",
     name: "",
-    address: "",
-    dni: "",
-    email: "",
-    phone: "",
-    mobile: "",
-  });
-
-  const [validate, setValidate] = useState({
-    name: "",
+    job: "",
     address: "",
     dni: "",
     email: "",
     phone: "",
     mobile: ""
+  });
+
+  const [validate, setValidate] = useState({
+    name: "",
+    address: "",
+    job: "",
+    phone: ""
   });  
 
   useEffect(()=>{
@@ -48,10 +47,8 @@ export default function EditContactForm({ record, onEdit, onClose }) {
         setValidate({
           name: record[0].name != "" ? "success" : "error",
           address: record[0].address != "" ? "success" : "error",
-          dni: record[0].dni != "" ? "success" : "error",
-          email: record[0].email != "" ? "success" : "error",
-          phone: record[0].phone != "" ? "success" : "error",
-          mobile: record[0].mobile != "" ? "success" : "error"
+          job: record[0].job != "" ? "success" : "error",
+          phone: record[0].phone != "" ? "success" : "error"
         })
     }
   }, [record]);  
@@ -70,12 +67,10 @@ export default function EditContactForm({ record, onEdit, onClose }) {
     });
   
     if (
-        validate.name === "success" &&
-        validate.address === "success" &&
-        validate.dni === "success" &&
-        validate.email === "success" &&
-        validate.phone === "success" &&
-        validate.mobile === "success"
+      validate.name === "success" &&
+      validate.address === "success" &&
+      validate.job === "success" &&
+      validate.phone === "success"
     ) {
         onEdit(contact);
     }
@@ -136,6 +131,36 @@ export default function EditContactForm({ record, onEdit, onClose }) {
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <FormGroup>
+              <Label>Cargo</Label>
+              <InputGroup size="sm">
+                <Input
+                  type="text"
+                  name="job"
+                  id="job"
+                  placeholder="Cargo"
+                  valid={validate.job === "success"}
+                  invalid={validate.job === "error"}
+                  value={contact.job}
+                  onChange={(e) => {
+                    validForm(e);
+                    handleChange(e);
+                  }}
+                  onKeyPress={(event) => {
+                    if (!/^[a-zA-Z\s]*$/.test(event.key)) {
+                      event.preventDefault();
+                    }
+                  }}
+                />
+                <FormFeedback>
+                  Por favor teclee el cargo del contacto.
+                </FormFeedback>           
+              </InputGroup>
+            </FormGroup>          
           </Col>
         </Row>
         <Row>

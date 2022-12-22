@@ -8,7 +8,7 @@ import {
   Row,
   InputGroup,
   Input,
-  InputGroupText,
+  Col
 } from "reactstrap";
 import Pagination from "../Core/Pagination";
 import axios from "axios";
@@ -34,7 +34,7 @@ export default function ListContact({ columns, onClose, addContact }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const url = `/api/contacts/read?page=${page}&per_page=${rowsPerPage}`;
+      const url = `/api/contacts/services?page=${page}&per_page=${rowsPerPage}`;
       if (params != "") {
         url = url + params;
       }
@@ -98,6 +98,8 @@ export default function ListContact({ columns, onClose, addContact }) {
 
             setFindMode(false);
         }
+    } else {
+      setFindMode(true);
     }
     setParams(condition);
     setReload(true);
@@ -130,18 +132,20 @@ export default function ListContact({ columns, onClose, addContact }) {
             paddingBottom: "8px",
           }}
         >
-          <InputGroup size="sm">
-            <Input
-              name="criteria_value"
-              placeholder="Buscar por Nombre"
-              onChange={(e) => {
-                handleChange(e);
-              }}
-            />
-            <Button color="primary" onClick={onFind}>
-              <i className={findMode ? "bi bi-search" : "bi bi-x"}></i>
-            </Button>
-          </InputGroup>
+          <Col>
+            <InputGroup size="sm">
+              <Input
+                name="criteria_value"
+                placeholder="Buscar por Nombre"
+                onChange={(e) => {
+                  handleChange(e);
+                }}
+              />
+              <Button color="primary" onClick={onFind}>
+                <i className={findMode ? "bi bi-search" : "bi bi-x"}></i>
+              </Button>
+            </InputGroup>
+          </Col>
         </Row>
         <Table bordered>
           <thead>

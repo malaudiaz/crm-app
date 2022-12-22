@@ -10,7 +10,7 @@ import EditPartnerForm from "../../components/Partner/EditPartner";
 import DeleteForm from "../../components/Core/DeleteForm";
 import TableTool from "../../components/Core/TableTool";
 import FindPartnerForm from "../../components/Partner/FindPartner";
-import { HashLoader } from "react-spinners";
+import LoadingForm from "../../components/Core/Loading";
 
 import axios from "axios";
 import swal from "sweetalert";
@@ -44,7 +44,7 @@ export default function List({ user }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const url = `/api/partners/read?page=${page}&per_page=${rowsPerPage}`;
+      const url = `/api/partners/services?page=${page}&per_page=${rowsPerPage}`;
       if (params != "") {
         url = url + params;
       }
@@ -52,13 +52,15 @@ export default function List({ user }) {
 
       try {
         const { data } = await axios.get(url);
+        setLoading(false);
+
         setTotal(data.result.total);
         setTotalPages(data.result.total_pages);
         setRecords(data.result.data);
 
-        setLoading(false);
         setReload(false);
       } catch (error) {
+        setLoading(false);
         swal("Error", "ha ocurrido un error al consultar el API", "error");
       }
     };
@@ -97,11 +99,12 @@ export default function List({ user }) {
   };
 
   const addPartner = async (partner) => {
-    const url = "/api/partners/create";
-
+    const url = "/api/partners/services";
+    setLoading(true);
     try {
       const res = await axios.post(url, partner);
       if (res.status === 200) {
+        setLoading(false);
         swal(
           "Operación Exitosa",
           "El cliente se ha creado con éxito",
@@ -110,6 +113,7 @@ export default function List({ user }) {
         setReload(true);
       }
     } catch (errors) {
+      setLoading(false);
       swal("Error", "Ha ocurrido un error con la API", "error");
     }
   };
@@ -117,11 +121,12 @@ export default function List({ user }) {
   const editPartner = async (partner) => {
     selectedList.map(async (row) => {
       setLoading(true);
-      const url = `/api/partners/update?id=${row.id}`
+      const url = `/api/partners/services?id=${row.id}`
       try {
         await axios.put(url, partner);
         setLoading(false);
       } catch (errors) {
+        setLoading(false);
         swal("Error", "Ha ocurrido un error con la API", "error");
       }
       swal("Operación Exitosa", "Cambios guardados con éxito", "success");
@@ -137,8 +142,7 @@ export default function List({ user }) {
 
       setLoading(true);
 
-      const url = `/api/partners/delete?id=${row.id}`
-
+      const url = `/api/partners/services?id=${row.id}`
       await axios
         .delete(url)
         .then((res) => {
@@ -146,6 +150,7 @@ export default function List({ user }) {
           setLoading(false);
         })
         .catch((errors) => {
+          setLoading(false);
           swal("Error", "Ha ocurrido un error con la API", "error");
         });
       setReload(true);
@@ -215,36 +220,31 @@ export default function List({ user }) {
           <div className="table-responsive">
             <div className="table-wrapper">
 
-              {loading && <div className="css-15dql7d"><HashLoader color="#36d7b7" /></div>}
-              {!loading && (
-                <>
-                  <div className="table-title">
-                    <TableTool
-                      title={"Clientes"}
-                      openForm={openAddPartner}
-                      openFind={openFindPartner}
-                      closFind={closeFindPartner}
-                      isFindMode={findMode}
-                      loading={loading}
-                    />
-                  </div>
-                  <Table
-                    records={records}
-                    columns={columns}
-                    onItemCheck={onItemCheck}
-                    onEdit={openEditPartner}
-                    onDelete={openDelPartner}
+                <div className="table-title">
+                  <TableTool
+                    title={"Clientes"}
+                    openForm={openAddPartner}
+                    openFind={openFindPartner}
+                    closFind={closeFindPartner}
+                    isFindMode={findMode}
+                    loading={loading}
                   />
+                </div>
+                <Table
+                  records={records}
+                  columns={columns}
+                  onItemCheck={onItemCheck}
+                  onEdit={openEditPartner}
+                  onDelete={openDelPartner}
+                />
 
-                  <Pagination
-                    onChangePage={onChangePage}
-                    currentPage={page}
-                    totalPage={totalPages}
-                    totalCount={total}
-                    rowsPerPage={rowsPerPage}
-                  />
-                </>
-              )}
+                <Pagination
+                  onChangePage={onChangePage}
+                  currentPage={page}
+                  totalPage={totalPages}
+                  totalCount={total}
+                  rowsPerPage={rowsPerPage}
+                />
             </div>
           </div>
         </div>
@@ -285,6 +285,14 @@ export default function List({ user }) {
           onClose={closeFindPartner}
         />
       </ModalForm>      
+
+      <ModalForm
+        id={"loading"}
+        open={loading}
+        size='sm'
+      >
+        <LoadingForm />
+      </ModalForm>
 
     </Layout>
   );

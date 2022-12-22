@@ -19,7 +19,7 @@ export const menus = [
     },
     {
         id:2,
-        text:"Contactos",
+        text:"Contáctos",
         iconClass:"bi bi-person-lines-fill",
         path:"/contacts/list",
         hasChild:false,

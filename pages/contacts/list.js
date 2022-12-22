@@ -17,11 +17,12 @@ import swal from "sweetalert";
 
 const columns = [
   { id: 1, title: "Nombre", accessor: "name" },
-  { id: 2, title: "DNI", accessor: "dni" },
-  { id: 3, title: "Teléfono", accessor: "phone" },
-  { id: 4, title: "Móvil", accessor: "mobile" },
-  { id: 5, title: "Dirección", accessor: "address" },
-  { id: 6, title: "Correo", accessor: "email"}
+  { id: 2, title: "Cargo", accessor: "job" },
+  { id: 3, title: "DNI", accessor: "dni" },
+  { id: 4, title: "Teléfono", accessor: "phone" },
+  { id: 5, title: "Móvil", accessor: "mobile" },
+  { id: 6, title: "Dirección", accessor: "address" },
+  { id: 7, title: "Correo", accessor: "email"}
 ];
 
 export default function List({ user }) {
@@ -45,7 +46,7 @@ export default function List({ user }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const url = `/api/contacts/read?page=${page}&per_page=${rowsPerPage}`;
+      const url = `/api/contacts/services?page=${page}&per_page=${rowsPerPage}`;
       if (params != "") {
         url = url + params;
       }
@@ -98,7 +99,7 @@ export default function List({ user }) {
   };
 
   const addContact = async (partner) => {
-    const url = "/api/contacts/create";
+    const url = "/api/contacts/services";
 
     try {
       const res = await axios.post(url, partner);
@@ -119,7 +120,7 @@ export default function List({ user }) {
   const editContact = async (partner) => {
     selectedList.map(async (row) => {
       setLoading(true);
-      const url = `/api/contacts/update?id=${row.id}`
+      const url = `/api/contacts/services?id=${row.id}`
       try {
         await axios.put(url, partner);
         setOpenEdit(false);
@@ -141,7 +142,7 @@ export default function List({ user }) {
 
       setLoading(true);
 
-      const url = `/api/contacts/delete?id=${row.id}`
+      const url = `/api/contacts/services?id=${row.id}`
 
       await axios
         .delete(url)

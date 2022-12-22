@@ -27,14 +27,14 @@ export default function AddPartnerForm({ onAdd, onClose }) {
     phone: "",
     mobile: "",
     nit: "",
+    contacts: []
   });
 
   const [validate, setValidate] = useState({
     type: "",
     name: "",
-    dni: "",
-    phone: "",
-    nit: "",
+    address: "",
+    phone: ""
   });
 
   const [activeTab, setActiveTab] = useState("1");
@@ -74,21 +74,27 @@ export default function AddPartnerForm({ onAdd, onClose }) {
       ...validate,
       type: partner.type != "" ? "success" : "error",
       name: partner.name != "" ? "success" : "error",
-      dni: partner.dni != "" ? "success" : "error",
-      phone: partner.phone != "" ? "success" : "error",
-      nit: partner.nit != "" ? "success" : "error",
+      address: partner.address != "" ? "success" : "error",
+      phone: partner.phone != "" ? "success" : "error"
+
     });
 
     if (
       validate.type === "success" &&
       validate.name === "success" &&
-      validate.dni === "success" &&
-      validate.phone === "success" &&
-      validate.nit === "success"
+      validate.address === "success" &&
+      validate.phone === "success"
     ) {
       onAdd(partner);
     }
   };
+
+  const setContacts = (contacts) => {
+    setPartner({
+      ...partner,
+      contacts: contacts
+    })
+  }
 
   return (
     <Form className="form" onSubmit={handleSubmit}>
@@ -126,7 +132,7 @@ export default function AddPartnerForm({ onAdd, onClose }) {
             />
           </TabPane>
           <TabPane tabId="2">
-              <ContactForm />
+              <ContactForm setContacts={setContacts}/>
           </TabPane>
         </TabContent>
       </ModalBody>

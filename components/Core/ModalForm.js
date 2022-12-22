@@ -8,6 +8,7 @@ export default function ModalForm(props) {
             backdrop={'static'}
             keyboard={true}
             centered={true}
+            size={props.size ? props.size : ""}
         >
             {props.children}
       </Modal>

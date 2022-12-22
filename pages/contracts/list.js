@@ -13,18 +13,19 @@ import AddContractForm from "../../components/Contract/AddContract";
 import EditContractForm from "../../components/Contract/EditContract";
 import FindContractForm from "../../components/Contract/FindContract";
 
-import { HashLoader } from "react-spinners";
-
 import axios from "axios";
 import swal from "sweetalert";
+import LoadingForm from "../../components/Core/Loading";
 
 const columns = [
   { id: 1, title: "Número", accessor: "number" },
   { id: 2, title: "Cliente", accessor: "partner" },
   { id: 3, title: "Contacto", accessor: "contact" },
-  { id: 4, title: "Importe x Ejecutar", accessor: "real_import" },
-  { id: 5, title: "Firmado por", accessor: "sign_by" },
-  { id: 6, title: "Fecha de Firma", accessor: "sign_date"}
+  { id: 4, title: "Monto Contratado", accessor: "initial_aproved_import"},
+  { id: 5, title: "Monto Disponible", accessor: "real_import" },
+  { id: 6, title: "Estado", accessor: "status" },
+  { id: 7, title: "Firmado por", accessor: "sign_by" },
+  { id: 8, title: "Fecha de Firma", accessor: "sign_date"}
 ];
 
 export default function List({ user }) {
@@ -48,7 +49,7 @@ export default function List({ user }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const url = `/api/contracts/read?page=${page}&per_page=${rowsPerPage}`
+      const url = `/api/contracts/services?page=${page}&per_page=${rowsPerPage}`
       if (params != "") {
         url = url + params;
       }
@@ -56,11 +57,12 @@ export default function List({ user }) {
 
       try {
         const {data} = await axios.get(url);
+        setLoading(false);
+
         setTotal(data.result.total);
         setTotalPages(data.result.total_pages);
         setRecords(data.result.data);
- 
-        setLoading(false);
+        
         setReload(false);
       } catch (error) {
         swal("Error", "ha ocurrido un error al consultar el API", "error");
@@ -107,13 +109,13 @@ export default function List({ user }) {
     try {
       const res = await axios.post(url, contract);
       if (res.status === 200) {
+        setLoading(false);
         swal(
           "Operación Exitosa",
           "El contrato se ha creado con éxito",
           "success"
         );
         setOpenAdd(false);
-        setLoading(false);
         setReload(true);
       }
     } catch (errors) {
@@ -218,37 +220,30 @@ export default function List({ user }) {
         <div className="container">
           <div className="table-responsive">
             <div className="table-wrapper">
-
-              {loading && <div className="css-15dql7d"><HashLoader color="#36d7b7" /></div>}
-
-              {!loading && (
-                <>
-                  <div className="table-title">
-                    <TableTool
-                      title={"Contratos"}
-                      openForm={openAddContract}
-                      openFind={openFindContract}
-                      closFind={closeFindContract}
-                      isFindMode={findMode}
-                    />
-                  </div>                
-                  <Table
-                    records={records}
-                    columns={columns}
-                    onItemCheck={onItemCheck}
-                    onEdit={openEditContract}
-                    onDelete={openDelContract}
+                <div className="table-title">
+                  <TableTool
+                    title={"Contratos"}
+                    openForm={openAddContract}
+                    openFind={openFindContract}
+                    closFind={closeFindContract}
+                    isFindMode={findMode}
                   />
+                </div>                
+                <Table
+                  records={records}
+                  columns={columns}
+                  onItemCheck={onItemCheck}
+                  onEdit={openEditContract}
+                  onDelete={openDelContract}
+                />
 
-                  <Pagination
-                    onChangePage={onChangePage}
-                    currentPage={page}
-                    totalPage={totalPages}
-                    totalCount={total}
-                    rowsPerPage={rowsPerPage}
-                  />
-                </>
-              )}
+                <Pagination
+                  onChangePage={onChangePage}
+                  currentPage={page}
+                  totalPage={totalPages}
+                  totalCount={total}
+                  rowsPerPage={rowsPerPage}
+                />
             </div>
           </div>
         </div>
@@ -288,6 +283,14 @@ export default function List({ user }) {
           isFindMode={findMode}
           onClose={closeFindContract}
         />
+      </ModalForm>
+
+      <ModalForm
+        id={"loading"}
+        open={loading}
+        size='sm'
+      >
+        <LoadingForm />
       </ModalForm>
 
     </Layout>

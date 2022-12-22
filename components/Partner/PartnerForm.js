@@ -58,7 +58,7 @@ export default function PartnerForm({partner, validate, validForm, handleChange}
                                     handleChange(e);
                                 }}
                                 onKeyPress={(event) => {
-                                    if (!/[0-9]/.test(event.key)) {
+                                    if (!/[0-9.]/.test(event.key)) {
                                     event.preventDefault();
                                     }
                                 }}
@@ -88,7 +88,7 @@ export default function PartnerForm({partner, validate, validForm, handleChange}
                                     handleChange(e);
                                 }}
                                 onKeyPress={(event) => {
-                                    if (!/^[a-zA-Z\s]*$/.test(event.key)) {
+                                    if (!/^[a-zA-Z0-9.\s]*$/.test(event.key)) {
                                         event.preventDefault();
                                     }
                                 }}
@@ -115,7 +115,7 @@ export default function PartnerForm({partner, validate, validForm, handleChange}
                                     handleChange(e);
                                 }}
                                 onKeyPress={(event) => {
-                                    if (!/^[a-zA-Z\s]*$/.test(event.key)) {
+                                    if (!/^[a-zA-Z.0-9\s]*$/.test(event.key)) {
                                         event.preventDefault();
                                     }
                                 }}
@@ -143,7 +143,7 @@ export default function PartnerForm({partner, validate, validForm, handleChange}
                                     handleChange(e);
                                 }}
                                 onKeyPress={(event) => {
-                                    if (!/[0-9]/.test(event.key)) {
+                                    if (!/[0-9.]/.test(event.key)) {
                                     event.preventDefault();
                                     }
                                 }}

@@ -11,10 +11,10 @@ import TableTool from "../../components/Core/TableTool";
 import AddUserForm from "../../components/Users/AddUser";
 import EditUserForm from "../../components/Users/EditUser";
 import FindUserForm from "../../components/Users/FindUser";
-import { HashLoader } from "react-spinners";
 
 import axios from "axios";
 import swal from "sweetalert";
+import LoadingForm from "../../components/Core/Loading";
 
 const columns = [
   { id: 1, title: "Usuario", accessor: "username" },
@@ -46,7 +46,8 @@ export default function List({ user }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const url = `/api/users/read?page=${page}&per_page=${rowsPerPage}`
+      const url = `/api/users/services?page=${page}&per_page=${rowsPerPage}`
+      
       if (params != "") {
         url = url + params;
       }
@@ -54,11 +55,12 @@ export default function List({ user }) {
 
       try {
         const {data} = await axios.get(url);
+        setLoading(false);
+
         setTotal(data.result.total);
         setTotalPages(data.result.total_pages);
         setRecords(data.result.data);
  
-        setLoading(false);
         setReload(false);
       } catch (error) {
         swal("Error", "ha ocurrido un error al consultar el API", "error");
@@ -100,21 +102,22 @@ export default function List({ user }) {
 
   const addUser = async (users) => {
     setLoading(true);
-    const url = "/api/users/create"
+    const url = "/api/users/services";
 
     try {
       const res = await axios.post(url, users);
       if (res.status === 200) {
+        setLoading(false);
         swal(
           "Operación Exitosa",
           "El usuario se ha creado con éxito",
           "success"
         );
         setOpenAdd(false);
-        setLoading(false);
         setReload(true);
       }
     } catch (errors) {
+      console.log(errors);
       swal("Error", "Ha ocurrido un error con la API", "error");
     }
   };
@@ -122,13 +125,14 @@ export default function List({ user }) {
   const editUser = async (users) => {
     setLoading(true);
     selectedList.map(async (row) => {
-      const url = `/api/users/update?id=${row.id}`
+      const url = `/api/users/services?id=${row.id}`
       try {
         await axios.put(url, users);
-        setOpenAdd(false);
         setLoading(false);
+        setOpenAdd(false);
         setReload(true);
       } catch (errors) {
+        setLoading(false);
         swal("Error", "Ha ocurrido un error con la API", "error");
       }
 
@@ -143,11 +147,12 @@ export default function List({ user }) {
     setLoading(true);
 
     selectedList.map(async (row) => {
-      const url = `/api/users/delete?id=${row.id}`
+      const url = `/api/users/services?id=${row.id}`
       try {
         await axios.delete(url);
         setLoading(false);
       } catch (errors) {
+        setLoading(false);
         swal("Error", "Ha ocurrido un error con la API", "error");
       }
       setOpenDelete(false);
@@ -217,38 +222,31 @@ export default function List({ user }) {
       <div className="row">
         <div className="container">
           <div className="table-responsive">
-            <div className="table-wrapper">
-
-              {loading && <div className="css-15dql7d"><HashLoader color="#36d7b7" /></div>}
-
-              {!loading && (
-                <>
-                  <div className="table-title">
-                    <TableTool
-                      title={"Usuarios"}
-                      openForm={openAddUser}
-                      openFind={openFindUser}
-                      closFind={closeFindUser}
-                      isFindMode={findMode}
-                    />
-                  </div>
-                  <Table
-                    records={records}
-                    columns={columns}
-                    onItemCheck={onItemCheck}
-                    onEdit={openEditUser}
-                    onDelete={openDelUser}
+          <div className="table-wrapper">
+                <div className="table-title">
+                  <TableTool
+                    title={"Usuarios"}
+                    openForm={openAddUser}
+                    openFind={openFindUser}
+                    closFind={closeFindUser}
+                    isFindMode={findMode}
                   />
+                </div>
+                <Table
+                  records={records}
+                  columns={columns}
+                  onItemCheck={onItemCheck}
+                  onEdit={openEditUser}
+                  onDelete={openDelUser}
+                />
 
-                  <Pagination
-                    onChangePage={onChangePage}
-                    currentPage={page}
-                    totalPage={totalPages}
-                    totalCount={total}
-                    rowsPerPage={rowsPerPage}
-                  />
-                </>
-              )}
+                <Pagination
+                  onChangePage={onChangePage}
+                  currentPage={page}
+                  totalPage={totalPages}
+                  totalCount={total}
+                  rowsPerPage={rowsPerPage}
+                />
             </div>
           </div>
         </div>
@@ -290,6 +288,15 @@ export default function List({ user }) {
         />
       </ModalForm>
 
+      <ModalForm
+        id={"loading"}
+        open={loading}
+        size='sm'
+      >
+        <LoadingForm />
+      </ModalForm>
+
+
     </Layout>
   );
 }
@@ -307,8 +314,8 @@ export async function getServerSideProps({ req, res }) {
           username: payload.username,
           fullname: payload.fullname,
           job: payload.job,
-        },
-      },
+        }
+      }
     };
   } catch (error) {
     return {

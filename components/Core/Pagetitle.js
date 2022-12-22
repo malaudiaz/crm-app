@@ -33,7 +33,7 @@ export default function PageTitle({title, except=""}) {
                     text = "Usuarios";
                     break;
                 case "contacts":
-                    text = "Contactos";
+                    text = "Contáctos";
                     break;
                 case "partner":
                     text = "Clientes";
@@ -44,7 +44,7 @@ export default function PageTitle({title, except=""}) {
                 case "profile":
                     text = "Pérfil";
                     break;
-                case "contract":
+                case "contracts":
                     text = "Contratos";
                     break;
                 default:

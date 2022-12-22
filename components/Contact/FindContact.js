@@ -89,6 +89,7 @@ export default function FindContactForm({ onFind, onClose }) {
                 >
                   <option value="">Seleccione...</option>
                   <option value="name">Nombre</option>
+                  <option value="job">Cargo</option>
                   <option value="dni">DNI</option>
                 </Input> 
                 <FormFeedback>
