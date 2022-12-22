@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { jwtVerify } from "jose";
 import Layout from "../../components/Core/Layout";
 import PageTitle from "../../components/Core/Pagetitle";
-import Table from "../../components/Core/Table";
+import DataTable from "../../components/Core/DataTable";
 import Pagination from "../../components/Core/Pagination";
 import ModalForm from "../../components/Core/ModalForm";
 import AddParnetForm from "../../components/Partner/AddPartner";
@@ -159,7 +159,7 @@ export default function List({ user }) {
 
   const findPartner = (filter) => {
     let condition = "";
-    if (filter.key != "" && filter.value != "") {
+    if (filter.criteria_key != "" && filter.criteria_value != "") {
       condition =
         "&criteria_key=" +
         filter.criteria_key +
@@ -230,7 +230,8 @@ export default function List({ user }) {
                     loading={loading}
                   />
                 </div>
-                <Table
+                <DataTable
+                  tableId={"partners"}
                   records={records}
                   columns={columns}
                   onItemCheck={onItemCheck}

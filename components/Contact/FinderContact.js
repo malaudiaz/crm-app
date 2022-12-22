@@ -16,11 +16,11 @@ export default function FinderContact() {
                 readOnly
             />
             <InputGroupText>
-                <a><i class="bi bi-search"></i></a>
+                <a style={{cursor: "pointer"}}><i class="bi bi-search"></i></a>
             </InputGroupText>  
 
             <FormFeedback>
-                Por favor seleccione el contacto
+                Por favor seleccione el contácto
             </FormFeedback>
 
         </InputGroup>

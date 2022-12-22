@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { jwtVerify } from "jose";
 import Layout from "../../components/Core/Layout";
 import PageTitle from "../../components/Core/Pagetitle";
-import Table from "../../components/Core/Table";
+import DataTable from "../../components/Core/DataTable";
 import Pagination from "../../components/Core/Pagination";
 import ModalForm from "../../components/Core/ModalForm";
 import AddContactForm from "../../components/Contact/AddContact";
@@ -233,7 +233,8 @@ export default function List({ user }) {
                       isFindMode={findMode}
                     />
                   </div>
-                  <Table
+                  <DataTable
+                    tableId={"contacts"}
                     records={records}
                     columns={columns}
                     onItemCheck={onItemCheck}

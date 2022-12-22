@@ -1,7 +1,10 @@
+import {
+    Table
+} from "reactstrap";
 
-export default function Table({records, columns, onItemCheck, onEdit, onDelete}) {
+export default function DataTable({tableId, records, columns, onItemCheck, onEdit, onDelete}) {
     return (
-        <table className="table table-striped table-hover">
+        <Table size="sm" striped id={tableId}>
             <thead>
                 <tr>
                     <th>
@@ -19,7 +22,7 @@ export default function Table({records, columns, onItemCheck, onEdit, onDelete})
                             {title}
                         </th>
                     ))}
-                    <th>Acciones</th>
+                    {onEdit || onDelete ? <th>Acciones</th> : ""}
                 </tr>
             </thead>
             <tbody>
@@ -29,7 +32,7 @@ export default function Table({records, columns, onItemCheck, onEdit, onDelete})
                         <span className="custom-checkbox">
                             <input
                                 type="checkbox"
-                                id={`rowcheck`+i}
+                                id={tableId +`_rowcheck_`+i}
                                 checked={row.selected}
                                 onChange={(event) => onItemCheck(event, row)}                           
                             />
@@ -39,6 +42,7 @@ export default function Table({records, columns, onItemCheck, onEdit, onDelete})
                     {columns.map((col, j) => (
                         <td key={j}>{row[col.accessor]}</td>
                     ))}
+                    {onEdit || onDelete ? 
                     <td>
                         <a
                           className={row.selected ? "edit" : "disabled"}
@@ -63,10 +67,11 @@ export default function Table({records, columns, onItemCheck, onEdit, onDelete})
                           </i>
                         </a>
                     </td>
+                    : ""}
                 </tr>
                 ))}
             </tbody>
-        </table> 
+        </Table> 
     );
   }
   
