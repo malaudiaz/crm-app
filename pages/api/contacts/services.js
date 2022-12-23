@@ -25,11 +25,17 @@ const config = {
 };
 
 const getContacts = async (req, res) => {
-    const { page, per_page, criteria_key, criteria_value } = req.query;
+    const { page, per_page, criteria_key, criteria_value, partner_id } = req.query;
     let url = `${process.env.API_URL}contacts?page=${page}&per_page=${per_page}`;
-    if (criteria_key && criteria_value) {
-        url = url + `&criteria_key=${criteria_key}&criteria_value=${criteria_value}`;
+
+    if (partner_id) {
+        url = `${process.env.API_URL}contacts/partner/${partner_id}?page=1&per_page=6' contacts?page=${page}&per_page=${per_page}`;
+    } else {
+        if (criteria_key && criteria_value) {
+            url = url + `&criteria_key=${criteria_key}&criteria_value=${criteria_value}`;
+        }    
     }
+
     try {
         const response = await axios.get(url, config);
         if (response.status == 200) {
@@ -38,7 +44,8 @@ const getContacts = async (req, res) => {
             });
         }
     } catch (errors) {
-        return res.status(errors.response.status).json({ error: errors.response.statusText });
+        console.log(errors);
+        // return res.status(errors.response.status).json({ error: errors.response.statusText });
     }
 };
 

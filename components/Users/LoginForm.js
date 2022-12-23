@@ -69,7 +69,7 @@ export default function LoginForm() {
                   <Label>Usuario</Label>
                     <InputGroup size="sm">
                         <InputGroupText>
-                            <i class="bi bi-person-fill"></i>
+                            <i className="bi bi-person-fill"></i>
                         </InputGroupText>                        
                         <Input
                             type="text"

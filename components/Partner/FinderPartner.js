@@ -12,6 +12,7 @@ import {
   Input,
   FormFeedback,
   FormGroup,
+  Label,
 } from "reactstrap";
 
 import ModalForm from "../Core/ModalForm";
@@ -24,10 +25,11 @@ const columns = [
   { id: 2, title: "NIT", accessor: "nit" },
 ];
 
-export default function FinderPartner() {
+export default function FinderPartner({ changePartner }) {
   const [loading, setLoading] = useState(false);
   const [records, setRecords] = useState([]);
   const [record, setRecord] = useState(null);
+  const [partner, setPartner] = useState("");
   const [openFinderPartner, setOpenFinderPartner] = useState(false);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -81,11 +83,14 @@ export default function FinderPartner() {
         validate.criteria_value === "success"
       ) {
         const condition =
-          "criteria_key=" +
+          "&criteria_key=" +
           filter.criteria_key +
           "&criteria_value=" +
           filter.criteria_value;
-        setParams(condition);
+
+        params = condition;
+
+        setParams(params);
 
         fetchData();
       }
@@ -109,7 +114,6 @@ export default function FinderPartner() {
     fetchData();
   };
 
-
   const onOpenFinder = () => {
     setOpenFinderPartner(true);
   };
@@ -128,6 +132,13 @@ export default function FinderPartner() {
     setRecords([]);
 
     setOpenFinderPartner(false);
+  };
+
+  const onAcceptFinder = () => {
+    setPartner(record.name);
+
+    changePartner(record);
+    onCloseFinder();
   };
 
   const onItemCheck = (e, item) => {
@@ -171,7 +182,13 @@ export default function FinderPartner() {
 
   return (
     <InputGroup size="sm">
-      <Input type="text" name="partner" placeholder="Cliente" readOnly />
+      <Input
+        type="text"
+        name="partner"
+        placeholder="Cliente"
+        value={partner}
+        readOnly
+      />
       <InputGroupText>
         <a
           style={{ cursor: "pointer" }}
@@ -188,66 +205,78 @@ export default function FinderPartner() {
         <ModalHeader toggle={onCloseFinder}>Buscar Clientes</ModalHeader>
         <ModalBody>
           <Row>
-            <Col md={12}>
-              <FormGroup>
-                <InputGroup size="sm">
-                  <Input
-                    id="criteria_key"
-                    name="criteria_key"
-                    type="select"
-                    valid={validate.criteria_value === "success"}
-                    invalid={validate.criteria_value === "error"}
-                    value={filter.criteria_key}
-                    onChange={(e) => {
-                      validForm(e);
-                      handleChange(e);
-                    }}
-                  >
-                    <option value="">Buscar por...</option>
-                    <option value="name">Nombre del Cliente</option>
-                    <option value="nit">NIT</option>
-                  </Input>
-                  <FormFeedback>
-                    Por favor seleccione el críterio para buscar.
-                  </FormFeedback>
-                </InputGroup>
+              <FormGroup row>
+                <Label for="criteria_key" size="sm" sm={3}>
+                  Buscar por:
+                </Label>
+                <Col sm={9}>
+                  <InputGroup size="sm">
+                    <Input
+                      id="criteria_key"
+                      name="criteria_key"
+                      type="select"
+                      valid={validate.criteria_key === "success"}
+                      invalid={validate.criteria_key === "error"}
+                      value={filter.criteria_key}
+                      onChange={(e) => {
+                        validForm(e);
+                        handleChange(e);
+                      }}
+                    >
+                      <option value="">Seleccione...</option>
+                      <option value="name">Nombre del Cliente</option>
+                      <option value="dni">DNI | NIF</option>
+                    </Input>
+                    <FormFeedback>
+                      Por favor, seleccione el críterio para buscar.
+                    </FormFeedback>
+                  </InputGroup>
+                </Col>
               </FormGroup>
-            </Col>
           </Row>
           <Row>
-            <Col md={12}>
-              <FormGroup>
-                <InputGroup size="sm">
-                  <Input
-                    type="text"
-                    name="criteria_value"
-                    id="criteria_value"
-                    placeholder={
-                      filter.criteria_key === "name"
-                        ? "Nombre del Cliente"
-                        : filter.criteria_key === "nit"
-                        ? "NIT"
-                        : ""
-                    }
-                    valid={validate.criteria_value === "success"}
-                    invalid={validate.criteria_value === "error"}
-                    value={filter.criteria_value}
-                    onChange={(e) => {
-                      validForm(e);
-                      handleChange(e);
-                    }}
-                  />
-                  <FormFeedback>
-                    Por favor teclee el valor a buscar.
-                  </FormFeedback>
-                </InputGroup>
+              <FormGroup row>
+                <Label for="criteria_value" size="sm" sm={3}>
+                {
+                  filter.criteria_key === "name"
+                    ? "Nombre"
+                    : filter.criteria_key === "dni"
+                    ? "DNI | NIF"
+                    : "Críterio"
+                }
+                </Label>
+                <Col sm={9}>
+                  <InputGroup size="sm">
+                    <Input
+                      type="text"
+                      name="criteria_value"
+                      id="criteria_value"
+                      placeholder={
+                        filter.criteria_key === "name"
+                          ? "Nombre"
+                          : filter.criteria_key === "dni"
+                          ? "DNI | NIF"
+                          : ""
+                      }
+                      valid={validate.criteria_value === "success"}
+                      invalid={validate.criteria_value === "error"}
+                      value={filter.criteria_value}
+                      onChange={(e) => {
+                        validForm(e);
+                        handleChange(e);
+                      }}
+                    />
+                    <FormFeedback>
+                      Por favor teclee el valor a buscar.
+                    </FormFeedback>
+                  </InputGroup>
+                </Col>
               </FormGroup>
-            </Col>
           </Row>
           <Row>
             <Col md={12}>
               <Button
-                color={records.length === 0 ? "danger" : "success"}
+                color={records.length === 0 ? "danger" : "info"}
                 size="sm"
                 block
                 data-toggle="tooltip"
@@ -312,6 +341,7 @@ export default function FinderPartner() {
             color="primary"
             disabled={record ? false : true}
             data-toggle="tooltip"
+            onClick={onAcceptFinder}
             title="Aceptar"
           >
             <i className="bi bi-check2-circle"></i> Aceptar

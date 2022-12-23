@@ -18,7 +18,7 @@ const TableTool = ({title, openForm, openFind, isFindMode, closFind}) => {
                     <span>{!isFindMode ? "Filtrar" : "Quitar Filtro"}</span>
                 </a>
                 <a
-                    className="btn btn-primary"
+                    className="btn btn-success"
                     onClick={openForm}
                 >
                     <i className="bi bi-plus-circle-fill"></i>{" "}
