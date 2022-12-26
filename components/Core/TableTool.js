@@ -13,6 +13,8 @@ const TableTool = ({title, openForm, openFind, isFindMode, closFind}) => {
                 <a
                     className={!isFindMode ? "btn btn-danger" : "btn btn-info"}
                     onClick={!isFindMode ? openFind : closFind}
+                    data-toggle="tooltip"
+                    title={!isFindMode ? "Filtrar" : "Quitar Filtro"}          
                 >
                     <i className={!isFindMode ? "bi bi-funnel" : "bi bi-funnel-fill"}></i>{" "}
                     <span>{!isFindMode ? "Filtrar" : "Quitar Filtro"}</span>
@@ -20,6 +22,8 @@ const TableTool = ({title, openForm, openFind, isFindMode, closFind}) => {
                 <a
                     className="btn btn-success"
                     onClick={openForm}
+                    data-toggle="tooltip"
+                    title={"Nuevo"}
                 >
                     <i className="bi bi-plus-circle-fill"></i>{" "}
                     <span>Nuevo</span>

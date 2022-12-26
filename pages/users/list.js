@@ -289,13 +289,12 @@ export default function List({ user }) {
         />
       </ModalForm>
 
-      <ModalForm
+      <LoadingForm
         id={"loading"}
         open={loading}
         size='sm'
-      >
-        <LoadingForm />
-      </ModalForm>
+        waitMsg={"Por favor, espere"}
+      />
 
 
     </Layout>

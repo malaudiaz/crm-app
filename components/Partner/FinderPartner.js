@@ -19,6 +19,7 @@ import ModalForm from "../Core/ModalForm";
 import DataTable from "../Core/DataTable";
 import Pagination from "../Core/Pagination";
 import axios from "axios";
+import { HashLoader } from "react-spinners";
 
 const columns = [
   { id: 1, title: "Nombre", accessor: "name" },
@@ -55,6 +56,7 @@ export default function FinderPartner({ changePartner }) {
 
     try {
       const { data } = await axios.get(url);
+
       setLoading(false);
 
       setTotal(data.result.total);
@@ -224,7 +226,7 @@ export default function FinderPartner({ changePartner }) {
                       }}
                     >
                       <option value="">Seleccione...</option>
-                      <option value="name">Nombre del Cliente</option>
+                      <option value="name">Nombre</option>
                       <option value="dni">DNI | NIF</option>
                     </Input>
                     <FormFeedback>
@@ -275,17 +277,20 @@ export default function FinderPartner({ changePartner }) {
           </Row>
           <Row>
             <Col md={12}>
-              <Button
-                color={records.length === 0 ? "danger" : "info"}
-                size="sm"
-                block
-                data-toggle="tooltip"
-                title={records.length === 0 ? "Buscar" : "Limpiar"}
-                onClick={(e) => onFind(e)}
-              >
-                <i className="bi bi-search"></i>{" "}
-                {records.length === 0 ? "Buscar" : "Limpiar"}
-              </Button>
+              { !loading &&
+                <Button
+                  color={records.length === 0 ? "danger" : "info"}
+                  size="sm"
+                  block
+                  data-toggle="tooltip"
+                  title={records.length === 0 ? "Buscar" : "Limpiar"}
+                  onClick={(e) => onFind(e)}
+                >
+                  {records.length === 0 ? <i className="bi bi-search"></i> : <i className="bi bi-escape"></i>} {" "}
+                  {records.length === 0 ? "Buscar" : "Limpiar"}
+                </Button>
+              }
+              { loading && <div className="css-15dql7d"><HashLoader color="#36d7b7" size={"30px"} />Por favor, espere...</div>}
             </Col>
           </Row>
 

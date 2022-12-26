@@ -26,7 +26,8 @@ export default function EditPartnerForm({record, onEdit, onClose}) {
         email: "",
         phone: "",
         mobile: "",
-        nit: ""
+        nit: "",
+        contacts: []
     });
 
     const [validate, setValidate] = useState({
@@ -43,14 +44,15 @@ export default function EditPartnerForm({record, onEdit, onClose}) {
         if (record.length > 0) {
             setPartner({
                 id: record[0].id,
-                id: record[0].type,
+                type: record[0].type,
                 name: record[0].name,
                 address: record[0].address,
                 dni: record[0].dni,
                 email: record[0].email,
                 phone: record[0].phone,
                 mobile: record[0].mobile,
-                nit: record[0].nit
+                nit: record[0].nit,
+                contacts: record[0].contacts
             })
         }
     }, [record]);
@@ -106,10 +108,15 @@ export default function EditPartnerForm({record, onEdit, onClose}) {
         }
     };
 
+    const setContacts = (contacts) => {
+      partner.contacts = contacts
+      setPartner(partner);
+    }    
+
     return (
         <Form className="form" onSubmit={handleSubmit}>
-        <ModalHeader toggle={onClose}>Editar Cliente</ModalHeader>
-        <ModalBody>
+          <ModalHeader toggle={onClose}>Editar Cliente</ModalHeader>
+          <ModalBody>
           <Nav tabs>
             <NavItem>
               <NavLink
@@ -142,7 +149,7 @@ export default function EditPartnerForm({record, onEdit, onClose}) {
               />
             </TabPane>
             <TabPane tabId="2">
-                <ContactForm />
+                <ContactForm setContacts={setContacts} partner_id={partner.id} />
             </TabPane>
           </TabContent>
         </ModalBody>

@@ -180,7 +180,7 @@ export default function AddContractForm({ onAdd, onClose }) {
                 }}
               />
               <FormFeedback>
-                Por favor, teclee el monto contratado del contrato.
+                Por favor, teclee el monto contratado.
               </FormFeedback>
             </InputGroup>
           </FormGroup>

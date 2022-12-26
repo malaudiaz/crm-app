@@ -88,8 +88,7 @@ export default function FindPartnerForm({ onFind, onClose }) {
                   }}
                 >
                   <option value="">Seleccione...</option>
-                  <option value="username">Nombre de Usuario</option>
-                  <option value="fullname">Nombre Completo</option>
+                  <option value="name">Nombre</option>
                   <option value="dni">DNI</option>
                 </Input> 
                 <FormFeedback>

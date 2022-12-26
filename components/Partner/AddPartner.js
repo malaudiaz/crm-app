@@ -90,10 +90,8 @@ export default function AddPartnerForm({ onAdd, onClose }) {
   };
 
   const setContacts = (contacts) => {
-    setPartner({
-      ...partner,
-      contacts: contacts
-    })
+    partner.contacts = contacts
+    setPartner(partner);
   }
 
   return (
@@ -132,7 +130,7 @@ export default function AddPartnerForm({ onAdd, onClose }) {
             />
           </TabPane>
           <TabPane tabId="2">
-              <ContactForm setContacts={setContacts}/>
+              <ContactForm setContacts={setContacts} partner_id={partner.id}/>
           </TabPane>
         </TabContent>
       </ModalBody>

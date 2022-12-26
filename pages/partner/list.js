@@ -158,6 +158,7 @@ export default function List({ user }) {
   };
 
   const findPartner = (filter) => {
+    setPage(1);
     let condition = "";
     if (filter.criteria_key != "" && filter.criteria_value != "") {
       condition =
@@ -287,13 +288,12 @@ export default function List({ user }) {
         />
       </ModalForm>      
 
-      <ModalForm
+      <LoadingForm
         id={"loading"}
         open={loading}
         size='sm'
-      >
-        <LoadingForm />
-      </ModalForm>
+        waitMsg={"Por favor, espere"}
+      />
 
     </Layout>
   );

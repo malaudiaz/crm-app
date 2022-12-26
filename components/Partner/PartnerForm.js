@@ -31,8 +31,8 @@ export default function PartnerForm({partner, validate, validForm, handleChange}
                             }}
                         >
                             <option value="">Seleccione...</option>
-                            <option value="username">Jurídico</option>
-                            <option value="fullname">Natural</option>
+                            <option value="JURIDICO">Jurídico</option>
+                            <option value="NATURAL">Natural</option>
                         </Input> 
                         <FormFeedback>
                           Por favor, seleccione el tipo de cliente.

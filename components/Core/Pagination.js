@@ -21,7 +21,9 @@ const Pagination = (props) => {
   });
 
   const onFirts = () => {
-    onChangePage(1);
+    if (currentPage != 1) {
+      onChangePage(1);
+    }
   };
 
   const onNext = () => {
@@ -37,92 +39,96 @@ const Pagination = (props) => {
   };
 
   const onLast = () => {
-    onChangePage(totalPage);
+    if (currentPage != totalPage) {
+      onChangePage(totalPage);
+    }
   };
 
   return (
     <div className="clearfix">
-      {showInfo && (
+      {(showInfo && totalCount > 0) && (
         <div className="hint-text">
           Mostrando <b>{currentPage * rowsPerPage - rowsPerPage + 1}</b> -{" "}
           {currentPage * rowsPerPage - rowsPerPage + rowsPerPage} de{" "}
           <b>{totalCount}</b> Registros
         </div>
       )}
-      <ul className="pagination">
-        <li
-          onClick={() => onFirts()}
-          className={currentPage == 1 ? "page-item disabled" : "page-item"}
-        >
-          <a className="page-link">
-            <i
-              className="bi bi-chevron-bar-left"
-              data-toggle="tooltip"
-              title="Primera Página"
-            ></i>
-          </a>
-        </li>
-        <li
-          onClick={() => onPrevious()}
-          className={currentPage == 1 ? "page-item disabled" : "page-item"}
-        >
-          <a className="page-link">
-            <i
-              className="bi bi-chevron-left"
-              data-toggle="tooltip"
-              title="Página Anterior"
-            ></i>
-          </a>
-        </li>
+      {totalCount > 0 &&
+        <ul className="pagination">
+          <li
+            onClick={() => onFirts()}
+            className={currentPage == 1 ? "page-item disabled" : "page-item"}
+          >
+            <a className="page-link">
+              <i
+                className="bi bi-chevron-bar-left"
+                data-toggle="tooltip"
+                title="Primera Página"
+              ></i>
+            </a>
+          </li>
+          <li
+            onClick={() => onPrevious()}
+            className={currentPage == 1 ? "page-item disabled" : "page-item"}
+          >
+            <a className="page-link">
+              <i
+                className="bi bi-chevron-left"
+                data-toggle="tooltip"
+                title="Página Anterior"
+              ></i>
+            </a>
+          </li>
 
-        {paginationRange.map((page, i) => {
-          if (page === DOTS) {
+          {paginationRange.map((page, i) => {
+            if (page === DOTS) {
+              return (
+                <li key={i} className="page-item-dots">
+                  &#8230;
+                </li>
+              );
+            }
             return (
-              <li key={i} className="page-item-dots">
-                &#8230;
+              <li
+                onClick={() => onChangePage(page)}
+                key={i}
+                className={currentPage == page ? "page-item active" : "page-item"}
+              >
+                <a className="page-link">{page}</a>
               </li>
             );
-          }
-          return (
-            <li
-              onClick={() => onChangePage(page)}
-              key={i}
-              className={currentPage == page ? "page-item active" : "page-item"}
-            >
-              <a className="page-link">{page}</a>
-            </li>
-          );
-        })}
+          })}
 
-        <li
-          onClick={() => onNext()}
-          className={
-            currentPage == totalPage ? "page-item disabled" : "page-item"
-          }
-        >
-          <a className="page-link">
-            <i
-              className="bi bi-chevron-compact-right"
-              data-toggle="tooltip"
-              title="Siguiente Página"
-            ></i>
-          </a>
-        </li>
-        <li
-          onClick={() => onLast()}
-          className={
-            currentPage == totalPage ? "page-item disabled" : "page-item"
-          }
-        >
-          <a className="page-link">
-            <i
-              className="bi bi-chevron-bar-right"
-              data-toggle="tooltip"
-              title="Última Página"
-            ></i>
-          </a>
-        </li>
-      </ul>
+          <li
+            onClick={() => onNext()}
+            className={
+              currentPage == totalPage ? "page-item disabled" : "page-item"
+            }
+          >
+            <a className="page-link">
+              <i
+                className="bi bi-chevron-compact-right"
+                data-toggle="tooltip"
+                title="Siguiente Página"
+              ></i>
+            </a>
+          </li>
+          <li
+            onClick={() => onLast()}
+            className={
+              currentPage == totalPage ? "page-item disabled" : "page-item"
+            }
+          >
+            <a className="page-link">
+              <i
+                className="bi bi-chevron-bar-right"
+                data-toggle="tooltip"
+                title="Última Página"
+              ></i>
+            </a>
+          </li>
+        </ul>
+      }
     </div>
   );
 };

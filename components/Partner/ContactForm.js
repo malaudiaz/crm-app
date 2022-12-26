@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Row, Col, Table, Button, InputGroup } from "reactstrap";
-import ListContact from "../Contact/ListContact";
 import ModalForm from "../Core/ModalForm";
 import AddContactForm from "../Contact/AddContact";
 import axios from "axios";
@@ -8,29 +7,51 @@ import swal from "sweetalert";
 
 const columns = [{ id: 1, title: "Nombre", accessor: "name" }];
 
-export default function PartnerForm({ setContacts }) {
+export default function ContactForm({ setContacts, partner_id }) {
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [reload, setReload] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
   const [records, setRecords] = useState([]);
   const [selected, setSelected] = useState([]);
-  const closeModal = () => setOpen(!open);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const mounted = useRef(false);
+  const rowsPerPage = 10;
 
-  const addContact = (contacts) => {
-    let tmp = [];
+  useEffect(() => {
+    const fetchData = async () => {
+      const url = `/api/contacts/services?page=${page}&per_page=${rowsPerPage}&partner_id=${partner_id}`;
+      setLoading(true);
+      try {
+        const { data } = await axios.get(url);
+        setLoading(false);
 
-    contacts.map((contact) => {
-      let found = records.find((e) => e.id === contact.id);
-      if (!found) {
-        tmp.push(contact);
+        setTotal(data.result.total);
+        setTotalPages(data.result.total_pages);
+        setRecords(data.result.data);
+
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+        swal("Error", "ha ocurrido un error al consultar el API", "error");
       }
-    });
-    const tempList = records.concat(tmp);
 
-    setRecords(tempList);
-    setContacts(tempList);
-    setOpen(false);
-  };
+    };
+
+    if (!mounted.current) {
+      // do componentDidMount logic
+      if (partner_id != "") {
+        mounted.current = true;
+        fetchData();
+      }
+    } else {
+      // do componentDidUpdate logic
+      if (reload) {
+        fetchData();
+      }
+    }
+  });
 
   const onItemCheck = (e, item) => {
     let tempList = records;
@@ -59,39 +80,18 @@ export default function PartnerForm({ setContacts }) {
     setRecords(tmp);
   };
 
-  const openAddContact = (e) => {
-    e.preventDefault;
-    setOpenAdd(true);
-  };
-
-  const saveContact = async (contact) => {
-    const url = "/api/contacts/create";
-
-    let tmp = records;
+  const saveContact = (contact) => {
+    let tmp = records.length > 0 ? records : [];
     tmp.push(contact);
     setRecords(tmp);
+    setContacts(tmp);
     setOpenAdd(false);
-
-    // try {
-    //   const res = await axios.post(url, contact);
-    //   if (res.status === 200) {
-    //     swal(
-    //       "Operación Exitosa",
-    //       "El contacto se ha creado con éxito",
-    //       "success"
-    //     );
-    //     setOpenAdd(false);
-    //     setLoading(false);
-    //   }
-    // } catch (errors) {
-    //   swal("Error", "Ha ocurrido un error con la API", "error");
-    // }
   };
 
   return (
     <div style={{ padding: "8px" }}>
       <Row>
-        <Col md={8} style={{ display: "flex", alignItems: "flex-end" }}>
+        <Col md={9} style={{ display: "flex", alignItems: "flex-end" }}>
           <h6>Contáctos del Cliente</h6>
         </Col>
         <Col md={2}>
@@ -104,27 +104,10 @@ export default function PartnerForm({ setContacts }) {
               }}
               color="primary"
               outline
-            >
-              <i 
-                className="bi bi-person-plus-fill"
-                data-toggle="tooltip"
-                title="Eliminar">
-              </i>
-            </Button>
-          </InputGroup>
-        </Col>
-        <Col md={2}>
-          <InputGroup size="sm" style={{ paddingLeft: "6px" }}>
-            <Button
-              id="btnSelectContact"
-              type="button"
-              onClick={() => {
-                setOpen(true);
-              }}
-              color="secondary"
-              outline
-            >
-              <i className="bi bi-person-lines-fill"></i>
+              data-toggle="tooltip"
+              title="Nuevo Contácto"
+          >
+              <i className="bi bi-person-plus-fill"></i>
             </Button>
           </InputGroup>
         </Col>
@@ -182,14 +165,6 @@ export default function PartnerForm({ setContacts }) {
           </tbody>
         </Table>
       </Row>
-
-      <ModalForm id={"listContact"} open={open}>
-        <ListContact
-          columns={columns}
-          onClose={closeModal}
-          addContact={addContact}
-        />
-      </ModalForm>
 
       <ModalForm id={"addContactForm"} open={openAdd}>
         <AddContactForm onAdd={saveContact} onClose={() => setOpenAdd(false)} />
