@@ -10,8 +10,6 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     require("bootstrap/dist/js/bootstrap.bundle.min.js");
-    require("../js/tinymce.min.js");
-    require("../js/main.js");
   }, []);
 
 
