@@ -101,7 +101,8 @@ export default function AddPartnerForm({ onAdd, onClose }) {
         <Nav tabs>
           <NavItem>
             <NavLink
-              className={classnames({ active: activeTab === "1" })}
+              href="#"
+              className={classnames({ active: activeTab === "1"})}
               onClick={() => {
                 toggleTab("1");
               }}
@@ -111,6 +112,7 @@ export default function AddPartnerForm({ onAdd, onClose }) {
           </NavItem>
           <NavItem>
             <NavLink
+              href="#"
               className={classnames({ active: activeTab === "2" })}
               onClick={() => {
                 toggleTab("2");
@@ -130,7 +132,7 @@ export default function AddPartnerForm({ onAdd, onClose }) {
             />
           </TabPane>
           <TabPane tabId="2">
-              <ContactForm setContacts={setContacts} partner_id={partner.id}/>
+              <ContactForm setContacts={setContacts} partner_id={partner.id} onClose={onClose}/>
           </TabPane>
         </TabContent>
       </ModalBody>

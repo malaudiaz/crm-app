@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   ModalHeader,
@@ -20,13 +20,14 @@ import DataTable from "../Core/DataTable";
 import Pagination from "../Core/Pagination";
 import axios from "axios";
 import { HashLoader } from "react-spinners";
+import Swal from 'sweetalert2'
 
 const columns = [
   { id: 1, title: "Nombre", accessor: "name" },
   { id: 2, title: "NIT", accessor: "nit" },
 ];
 
-export default function FinderPartner({ changePartner }) {
+export default function FinderPartner({ id, changePartner, contract }) {
   const [loading, setLoading] = useState(false);
   const [records, setRecords] = useState([]);
   const [record, setRecord] = useState(null);
@@ -47,6 +48,12 @@ export default function FinderPartner({ changePartner }) {
 
   const rowsPerPage = 10;
 
+  useEffect(() => {
+    if (contract.id_partner !== "") {
+      setPartner(contract.name_partner);
+    }
+  }, [contract.id_partner, contract.name_partner]);
+
   const fetchData = async () => {
     const url = `/api/partners/services?page=${page}&per_page=${rowsPerPage}`;
     if (params != "") {
@@ -66,9 +73,14 @@ export default function FinderPartner({ changePartner }) {
       console.log(error);
 
       setLoading(false);
-      swal("Error", "ha ocurrido un error al consultar el API", "error");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ha ocurrido un error al consultar la API',
+        showConfirmButton: true,
+      });              
     }
-  };
+  };  
 
   const onFind = (e) => {
     e.preventDefault();
@@ -185,8 +197,9 @@ export default function FinderPartner({ changePartner }) {
   return (
     <InputGroup size="sm">
       <Input
+        id={id}
         type="text"
-        name="partner"
+        name={id}
         placeholder="Cliente"
         value={partner}
         readOnly

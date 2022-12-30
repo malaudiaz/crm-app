@@ -14,7 +14,12 @@ import {
   FormFeedback
 } from "reactstrap";
 
-export default function EditContactForm({ record, onEdit, onClose }) {
+import axios from "axios";
+import Swal from 'sweetalert2'
+import LoadingForm from "../../components/Core/Loading";
+
+export default function EditContactForm({ record, onSave, onClose }) {
+  const [loading, setLoading] = useState(false);
   const [contact, setContact] = useState({
     id: "",
     name: "",
@@ -39,6 +44,7 @@ export default function EditContactForm({ record, onEdit, onClose }) {
             id: record[0].id,
             name: record[0].name,
             address: record[0].address,
+            job: record[0].job,
             dni: record[0].dni,
             email: record[0].email,
             phone: record[0].phone,
@@ -60,10 +66,8 @@ export default function EditContactForm({ record, onEdit, onClose }) {
         ...validate,
         name: contact.name != "" ? "success" : "error",
         address: contact.address != "" ? "success" : "error",
-        dni: contact.dni != "" ? "success" : "error",
-        email: contact.email != "" ? "success" : "error",
+        job: contact.job != "" ? "success" : "error",
         phone: contact.phone != "" ? "success" : "error",
-        mobile: contact.mobile != "" ? "success" : "error"
     });
   
     if (
@@ -72,7 +76,27 @@ export default function EditContactForm({ record, onEdit, onClose }) {
       validate.job === "success" &&
       validate.phone === "success"
     ) {
-        onEdit(contact);
+
+      setLoading(true);
+      const url = `/api/contacts/services?id=${contact.id}`
+      try {
+        await axios.put(url, contact);
+        setLoading(false);
+      } catch (errors) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al consultar la API',
+          showConfirmButton: true,
+        });           
+      }
+      Swal.fire({
+        icon: 'success',
+        title: 'Operación Exitosa',
+        text: 'Contácto modificado con éxito',
+        showConfirmButton: true,
+      });      
+      onSave(contact); 
     }
   };  
 
@@ -316,6 +340,14 @@ export default function EditContactForm({ record, onEdit, onClose }) {
           <i className="bi bi-check2-circle"></i> Grabar
         </Button>
       </ModalFooter>
+
+      <LoadingForm
+        id={"loading"}
+        open={loading}
+        size='sm'
+        waitMsg={"Por favor, espere"}
+      />
+
     </Form>
   );
 }

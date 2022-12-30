@@ -26,7 +26,7 @@ function Password({credentials, validate, validForm, handleChange}){
     return(
         <InputGroup size="sm">
             <InputGroupText>
-                <i class="bi bi-key-fill"></i>
+                <i className="bi bi-key-fill"></i>
             </InputGroupText>                        
             <Input
                 type={passwordType}

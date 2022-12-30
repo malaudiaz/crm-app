@@ -23,5 +23,29 @@ const config = {
     }
 };
 
+const getServerProps = async (req, res) => {
+    const { crmToken } = req.cookies;
+    try {
+      const { payload } = await jwtVerify(
+        crmToken,
+        new TextEncoder().encode(process.env.TOKEN_SECRET)
+      );
+      return {
+        props: {
+          user: {
+            username: payload.username,
+            fullname: payload.fullname,
+            job: payload.job,
+          },
+          rowsPerPage: process.env.ROW_PER_PAGE
+        },
+      };
+    } catch (error) {
+      return {
+        props: { user: { username: "", fullname: "", job: payload.job },  rowsPerPage: process.env.ROW_PER_PAGE},
+      };
+    }    
+}
 
-export {getToken, config}
+
+export {getToken, config, getServerProps}

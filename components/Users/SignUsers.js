@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { InputGroup, Input, FormFeedback } from "reactstrap";
 import axios from "axios";
 
-export default function SignUser() {
+export default function SignUser({ id, handleChange, validForm, valDefault }) {
   const mounted = useRef(false);
   const [records, setRecords] = useState([]);
 
@@ -14,7 +14,6 @@ export default function SignUser() {
         const { data } = await axios.get(url);
         // setLoading(false);
         setRecords(data.result);
-
       } catch (error) {
         console.log(error);
         // setLoading(false);
@@ -23,22 +22,34 @@ export default function SignUser() {
     };
 
     if (!mounted.current) {
-        mounted.current = true;
-        fetchData();
+      mounted.current = true;
+      fetchData();
     }
   });
 
-
   return (
     <InputGroup size="sm">
-      <Input id="signuser" name="signuser" type="select">
+      <Input
+        id={id}
+        name={id}
+        type="select"
+        value={valDefault}
+        onChange={(e) => {
+          validForm(e);
+          handleChange(e);
+        }}
+      >
         <option value="">Seleccione...</option>
         {records.map((record, i) => {
-           return <option key={i} value={record.id}>{record.fullname}</option>;
+          return (
+            <option key={i} value={record.id}>
+              {record.fullname}
+            </option>
+          );
         })}
       </Input>
       <FormFeedback>
-        Por favor, seleccione el quién firmo el contrato.
+        Por favor, seleccione quién firmo el contrato.
       </FormFeedback>
     </InputGroup>
   );

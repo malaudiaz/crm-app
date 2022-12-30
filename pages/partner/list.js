@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { jwtVerify } from "jose";
 import Layout from "../../components/Core/Layout";
 import PageTitle from "../../components/Core/Pagetitle";
 import DataTable from "../../components/Core/DataTable";
@@ -7,13 +6,13 @@ import Pagination from "../../components/Core/Pagination";
 import ModalForm from "../../components/Core/ModalForm";
 import AddParnetForm from "../../components/Partner/AddPartner";
 import EditPartnerForm from "../../components/Partner/EditPartner";
-import DeleteForm from "../../components/Core/DeleteForm";
 import TableTool from "../../components/Core/TableTool";
 import FindPartnerForm from "../../components/Partner/FindPartner";
 import LoadingForm from "../../components/Core/Loading";
+import { getServerProps } from "../_common";
 
 import axios from "axios";
-import swal from "sweetalert";
+import Swal from 'sweetalert2'
 
 const columns = [
   { id: 1, title: "Tipo", accessor: "type" },
@@ -23,7 +22,7 @@ const columns = [
   { id: 5, title: "Móvil", accessor: "mobile" },
 ];
 
-export default function List({ user }) {
+export default function List({ user, rowsPerPage }) {
   const [loading, setLoading] = useState(false);
   const [records, setRecords] = useState([]);
   const [page, setPage] = useState(1);
@@ -35,11 +34,11 @@ export default function List({ user }) {
 
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
   const [openFind, setOpenFind] = useState(false);
   const [findMode, setFindMode] = useState(false);
 
-  const rowsPerPage = 10;
+  // const rowsPerPage = 10;
+
   const mounted = useRef(false);
 
   useEffect(() => {
@@ -61,7 +60,13 @@ export default function List({ user }) {
         setReload(false);
       } catch (error) {
         setLoading(false);
-        swal("Error", "ha ocurrido un error al consultar el API", "error");
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al consultar la API',
+          showConfirmButton: true,
+        });        
       }
     };
 
@@ -105,16 +110,25 @@ export default function List({ user }) {
       const res = await axios.post(url, partner);
       if (res.status === 200) {
         setLoading(false);
-        swal(
-          "Operación Exitosa",
-          "El cliente se ha creado con éxito",
-          "success"
-        );
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Operación Exitosa',
+          text: 'El cliente se ha creado con éxito',
+          showConfirmButton: true,
+        })                
         setReload(true);
+        setOpenAdd(false);        
       }
     } catch (errors) {
       setLoading(false);
-      swal("Error", "Ha ocurrido un error con la API", "error");
+     
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ha ocurrido un error al consultar la API',
+        showConfirmButton: true,
+      });
     }
   };
 
@@ -127,10 +141,21 @@ export default function List({ user }) {
         setLoading(false);
       } catch (errors) {
         setLoading(false);
-        swal("Error", "Ha ocurrido un error con la API", "error");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al consultar la API',
+          showConfirmButton: true,
+        });
       }
-      swal("Operación Exitosa", "Cambios guardados con éxito", "success");
+      Swal.fire({
+        icon: 'success',
+        title: 'Operación Exitosa',
+        text: 'Cambios guardados con éxito',
+        showConfirmButton: true,
+      });           
       setReload(true);
+      setOpenEdit(false);        
     });
   };
 
@@ -146,14 +171,27 @@ export default function List({ user }) {
       await axios
         .delete(url)
         .then((res) => {
-          swal("Operación Exitosa", "Cliente eliminado con éxito", "success");
+          Swal.fire({
+            icon: 'success',
+            title: 'Operación Exitosa',
+            text: 'Cliente eliminado con éxito',
+            showConfirmButton: true,
+          });                     
           setLoading(false);
         })
         .catch((errors) => {
           setLoading(false);
-          swal("Error", "Ha ocurrido un error con la API", "error");
+          
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ha ocurrido un error al consultar la API',
+            showConfirmButton: true,
+          });           
+            
         });
-      setReload(true);
+
+        setReload(true);
     }
   };
 
@@ -191,7 +229,24 @@ export default function List({ user }) {
 
   const openDelPartner = (e) => {
     e.preventDefault;
-    setOpenDelete(true);
+
+    Swal.fire({
+      title: '¿ Estás seguro ?',
+      text: "! Esta opción no podrá ser revertida !",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',      
+      reverseButtons: true,
+      allowOutsideClick: false
+    }).then((result) => {
+      if (result.isConfirmed) {
+        delPartner(e);
+      }     
+    })
+
   }
 
   const closeAddPartner = () => {
@@ -267,17 +322,6 @@ export default function List({ user }) {
       </ModalForm>
 
       <ModalForm
-        id={"deletePartnerForm"}
-        open={openDelete}
-      >
-        <DeleteForm
-          title={"Eliminar Clientes"}
-          onDelete={delPartner}
-          onClose={closeDelPartner}
-        />
-      </ModalForm>
-
-      <ModalForm
         id={"findPartnerForm"}
         open={openFind}
       >
@@ -299,24 +343,5 @@ export default function List({ user }) {
   );
 }
 export async function getServerSideProps({ req, res }) {
-  const { crmToken } = req.cookies;
-  try {
-    const { payload } = await jwtVerify(
-      crmToken,
-      new TextEncoder().encode(process.env.TOKEN_SECRET)
-    );
-    return {
-      props: {
-        user: {
-          username: payload.username,
-          fullname: payload.fullname,
-          job: payload.job,
-        },
-      },
-    };
-  } catch (error) {
-    return {
-      props: { user: { username: "", fullname: "", job: payload.job } },
-    };
-  }
+  return getServerProps(req, res);
 }

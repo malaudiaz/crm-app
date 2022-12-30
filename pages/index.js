@@ -4,6 +4,7 @@ import PageTitle from "../components/Core/Pagetitle";
 import Infocard from "../components/Dashboard/Infocard";
 
 export default function Home({ user }) {
+
   return (
     <Layout user={user}>
       <PageTitle title={"Panel Informativo"} />

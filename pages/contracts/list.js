@@ -8,13 +8,14 @@ import Pagination from "../../components/Core/Pagination";
 import ModalForm from "../../components/Core/ModalForm";
 import DeleteForm from "../../components/Core/DeleteForm";
 import TableTool from "../../components/Core/TableTool";
+import { getServerProps } from "../_common";
 
 import AddContractForm from "../../components/Contract/AddContract";
 import EditContractForm from "../../components/Contract/EditContract";
 import FindContractForm from "../../components/Contract/FindContract";
 
 import axios from "axios";
-import swal from "sweetalert";
+import Swal from 'sweetalert2'
 import LoadingForm from "../../components/Core/Loading";
 
 const columns = [
@@ -23,12 +24,12 @@ const columns = [
   { id: 3, title: "Contacto", accessor: "contact" },
   { id: 4, title: "Monto Contratado", accessor: "initial_aproved_import"},
   { id: 5, title: "Monto Disponible", accessor: "real_import" },
-  { id: 6, title: "Estado", accessor: "status" },
-  { id: 7, title: "Firmado por", accessor: "sign_by" },
+  { id: 6, title: "Estado", accessor: "status_description" },
+  { id: 7, title: "Firmado por", accessor: "sign_full_name" },
   { id: 8, title: "Fecha de Firma", accessor: "sign_date"}
 ];
 
-export default function List({ user }) {
+export default function List({ user, rowsPerPage }) {
   const [loading, setLoading] = useState(false);
   const [records, setRecords] = useState([]);
   const [page, setPage] = useState(1);
@@ -40,11 +41,9 @@ export default function List({ user }) {
 
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
   const [openFind, setOpenFind] = useState(false);
   const [findMode, setFindMode] = useState(false);
 
-  const rowsPerPage = 10;
   const mounted = useRef(false);
 
   useEffect(() => {
@@ -65,7 +64,13 @@ export default function List({ user }) {
         
         setReload(false);
       } catch (error) {
-        swal("Error", "ha ocurrido un error al consultar el API", "error");
+        setLoading(false);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al consultar la API',
+          showConfirmButton: true,
+        });              
       }
     };
 
@@ -104,58 +109,101 @@ export default function List({ user }) {
 
   const addContract = async (contract) => {
     setLoading(true);
-    const url = "/api/contracts/create"
+    const url = "/api/contracts/services"
 
     try {
       const res = await axios.post(url, contract);
       if (res.status === 200) {
         setLoading(false);
-        swal(
-          "Operación Exitosa",
-          "El contrato se ha creado con éxito",
-          "success"
-        );
+        Swal.fire({
+          icon: 'success',
+          title: 'Operación Exitosa',
+          text: 'El contrato se ha creado con éxito',
+          showConfirmButton: true,
+        });              
         setOpenAdd(false);
         setReload(true);
       }
     } catch (errors) {
-      swal("Error", "Ha ocurrido un error con la API", "error");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ha ocurrido un error al consultar la API',
+        showConfirmButton: true,
+      });              
     }
   };
 
   const editContract = async (contract) => {
-    setLoading(true);
-    selectedList.map(async (row) => {
-      const url = `/api/contracts/update?id=${row.id}`
-      try {
-        await axios.put(url, contract);
-        setLoading(false);
-      } catch (errors) {
-        swal("Error", "Ha ocurrido un error con la API", "error");
-      }
 
-      setOpenEdit(false);
-      swal("Operación Exitosa", "Cambios en contrato guardados con éxito", "success");
-      setReload(true);
-    });
+    if (selectedList.length > 0) {
+      const row = selectedList[0];
+
+      setLoading(true);
+
+      const url = `/api/contracts/services?id=${row.id}`;
+
+      await axios
+        .put(url, contract)
+        .then((res) => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Operación Exitosa',
+            text: 'Contrato modificado con éxito',
+            showConfirmButton: true,
+          });                     
+          setLoading(false);
+          setOpenEdit(false);
+        })
+        .catch((errors) => {
+          setLoading(false);        
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ha ocurrido un error al consultar la API',
+            showConfirmButton: true,
+          });           
+            
+        });
+
+        setReload(true);
+    }
   };
 
-  const delContract = (e) => {
+  const delContract = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
-    selectedList.map(async (row) => {
-      const url = `/api/contracts/delete?id=${row.id}`
-      try {
-        await axios.delete(url);
-        setLoading(false);
-      } catch (errors) {
-        swal("Error", "Ha ocurrido un error con la API", "error");
-      }
-      setOpenDelete(false);
-      swal("Operación Exitosa", "Contrato eliminado con éxito", "success");
-      setReload(true);
-    });
+    if (selectedList.length > 0) {
+      const row = selectedList[0];
+
+      setLoading(true);
+
+      const url = `/api/contracts/services?id=${row.id}`
+      await axios
+        .delete(url)
+        .then((res) => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Operación Exitosa',
+            text: 'Contrato eliminado con éxito',
+            showConfirmButton: true,
+          });                     
+          setLoading(false);
+        })
+        .catch((errors) => {
+          setLoading(false);
+          
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ha ocurrido un error al consultar la API',
+            showConfirmButton: true,
+          });           
+            
+        });
+
+        setReload(true);
+    }
   };
 
   const findContract = (filter) => {
@@ -191,7 +239,23 @@ export default function List({ user }) {
 
   const openDelContract = (e) => {
     e.preventDefault;
-    setOpenDelete(true);
+
+    Swal.fire({
+      title: '¿ Estás seguro ?',
+      text: "! Esta opción no podrá ser revertida !",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',      
+      reverseButtons: true,
+      allowOutsideClick: false
+    }).then((result) => {
+      if (result.isConfirmed) {
+        delContract(e);
+      }     
+    })
   }
 
   const closeAddContract = () => {
@@ -265,17 +329,6 @@ export default function List({ user }) {
       </ModalForm>
 
       <ModalForm
-        id={"deleteContractForm"}
-        open={openDelete}
-      >
-        <DeleteForm
-          title={"Eliminar Contrato"}
-          onDelete={delContract}
-          onClose={closeDelContract}
-        />
-      </ModalForm>
-
-      <ModalForm
         id={"findContractForm"}
         open={openFind}
       >
@@ -297,25 +350,5 @@ export default function List({ user }) {
   );
 }
 export async function getServerSideProps({ req, res }) {
-  const { crmToken } = req.cookies;
-  try {
-    const { payload } = await jwtVerify(
-      crmToken,
-      new TextEncoder().encode(process.env.TOKEN_SECRET)
-    );
-
-    return {
-      props: {
-        user: {
-          username: payload.username,
-          fullname: payload.fullname,
-          job: payload.job,
-        },
-      },
-    };
-  } catch (error) {
-    return {
-      props: { user: { username: "", fullname: "", job: payload.job } },
-    };
-  }
+  return getServerProps(req, res);
 }

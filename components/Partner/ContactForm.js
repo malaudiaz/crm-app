@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { Row, Col, Table, Button, InputGroup } from "reactstrap";
 import ModalForm from "../Core/ModalForm";
 import AddContactForm from "../Contact/AddContact";
+import EditContactForm from "../Contact/EditContact"
 import axios from "axios";
-import swal from "sweetalert";
+import Swal from 'sweetalert2'
 
 const columns = [{ id: 1, title: "Nombre", accessor: "name" }];
 
@@ -11,6 +12,7 @@ export default function ContactForm({ setContacts, partner_id }) {
   const [loading, setLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const [records, setRecords] = useState([]);
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(1);
@@ -32,9 +34,13 @@ export default function ContactForm({ setContacts, partner_id }) {
         setRecords(data.result.data);
 
       } catch (error) {
-        console.log(error);
         setLoading(false);
-        swal("Error", "ha ocurrido un error al consultar el API", "error");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al consultar el API',
+          showConfirmButton: true,
+        })        
       }
 
     };
@@ -58,6 +64,8 @@ export default function ContactForm({ setContacts, partner_id }) {
     tempList.map((row) => {
       if (row.id === item.id) {
         row.selected = e.target.checked;
+      } else {
+        row.selected = false;
       }
       return row;
     });
@@ -67,18 +75,66 @@ export default function ContactForm({ setContacts, partner_id }) {
     setSelected(selected);
   };
 
+  const delContact = async (contact_id) => {
+    const url = `/api/contacts/services?id=${contact_id}`;
+    await axios
+    .delete(url)
+    .then((res) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Operación Exitosa',
+        text: 'Cliente eliminado con éxito',
+        showConfirmButton: true,
+      });                     
+      setLoading(false);
+    })
+    .catch((errors) => {
+      setLoading(false);
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ha ocurrido un error al consultar la API',
+        showConfirmButton: true,
+      });           
+        
+    });
+
+  }
+
   const onDelete = (event, row) => {
     event.preventDefault();
-
-    let item = records.find((e) => e.id === row.id);
-    let tmp = [];
-    records.map((record) => {
-      if (record.id !== item.id) {
-        tmp.push(record);
-      }
-    });
-    setRecords(tmp);
+   
+    Swal.fire({
+      title: '¿ Estás seguro ?',
+      text: "! Esta opción no podrá ser revertida !",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',      
+      reverseButtons: true,
+      allowOutsideClick: false
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let item = records.find((e) => e.id === row.id);
+        let tmp = [];
+        records.map((record) => {
+          if (record.id !== item.id) {
+            tmp.push(record);
+          }
+        });
+        delContact(item.id);
+        setRecords(tmp);
+      }     
+    })
   };
+
+  const onEdit = (event, row) => {
+    event.preventDefault();
+    setOpenEdit(true);
+  }
 
   const saveContact = (contact) => {
     let tmp = records.length > 0 ? records : [];
@@ -87,6 +143,18 @@ export default function ContactForm({ setContacts, partner_id }) {
     setContacts(tmp);
     setOpenAdd(false);
   };
+
+  const updateContact = (contact) => {
+    let tmp = [];
+    records.map((record) => {
+      if (record.id !== contact.id) {
+        tmp.push(record);
+      }
+    });
+    tmp.push(contact);
+    setRecords(tmp);
+    setOpenEdit(false);
+  }
 
   return (
     <div style={{ padding: "8px" }}>
@@ -127,7 +195,7 @@ export default function ContactForm({ setContacts, partner_id }) {
                   {title}
                 </th>
               ))}
-              <th style={{ textAlign: "center", width: "10%" }}>Acción</th>
+              <th style={{ textAlign: "center", width: "20%" }}>Acción</th>
             </tr>
           </thead>
           <tbody>
@@ -148,7 +216,18 @@ export default function ContactForm({ setContacts, partner_id }) {
                   {columns.map((col, j) => (
                     <td key={j}>{row[col.accessor]}</td>
                   ))}
-                  <td style={{ width: "10p%", textAlign: "center" }}>
+                  <td style={{ width: "20p%", textAlign: "center" }}>
+                    <a
+                      className={row.selected ? "edit" : "disabled"}
+                      onClick={(event) => onEdit(event, row)}
+                    >
+                      <i
+                        className="bi bi-pencil-fill"
+                        data-toggle="tooltip"
+                        title="Editar"
+                      ></i>
+                    </a>
+
                     <a
                       className={row.selected ? "delete" : "disabled"}
                       onClick={(event) => onDelete(event, row)}
@@ -169,6 +248,10 @@ export default function ContactForm({ setContacts, partner_id }) {
       <ModalForm id={"addContactForm"} open={openAdd}>
         <AddContactForm onAdd={saveContact} onClose={() => setOpenAdd(false)} />
       </ModalForm>
+      <ModalForm id={"editContactForm"} open={openEdit}>
+        <EditContactForm record={selected} onSave={updateContact} onClose={() => setOpenEdit(false)} />
+      </ModalForm>
+
     </div>
   );
 }

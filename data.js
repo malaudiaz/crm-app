@@ -26,17 +26,8 @@ export const menus = [
         parent_id:null,
         target:null
     },
-    // {
-    //     id:3,
-    //     text:"Contáctos",
-    //     iconClass:"bi bi-person-lines-fill",
-    //     path:"/contacts/list",
-    //     hasChild:false,
-    //     parent_id:null,
-    //     target:null
-    // },
     {
-        id:4,
+        id:3,
         text:"Contratos",
         iconClass:"bi bi-file-earmark-medical",
         path:"/contracts/list",
@@ -45,7 +36,7 @@ export const menus = [
         target:null
     },
     {
-        id:5,
+        id:4,
         text:"Perfil",
         iconClass:"bi bi-person",
         path:"/users/profile",

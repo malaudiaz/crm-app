@@ -29,7 +29,8 @@ export default function AddContractForm({ onAdd, onClose }) {
     initial_aproved_import: "",
     sign_by: "",
     sign_date: "",
-    status: "",
+    status_name: "",
+    status_description: "",
   });
 
   const [validate, setValidate] = useState({
@@ -39,7 +40,7 @@ export default function AddContractForm({ onAdd, onClose }) {
     initial_aproved_import: "",
     sign_by: "",
     sign_date: "",
-    status: "",
+    status_name: "",
   });
 
   const handleSubmit = async (e) => {
@@ -54,7 +55,7 @@ export default function AddContractForm({ onAdd, onClose }) {
         contract.initial_aproved_import != "" ? "success" : "error",
       sign_by: contract.sign_by != "" ? "success" : "error",
       sign_date: contract.sign_date != "" ? "success" : "error",
-      status: contract.status != "" ? "success" : "error",
+      status_name: contract.status_name != "" ? "success" : "error",
     });
 
     if (
@@ -64,9 +65,9 @@ export default function AddContractForm({ onAdd, onClose }) {
       validate.initial_aproved_import === "success" &&
       validate.sign_by === "success" &&
       validate.sign_date === "success" &&
-      validate.status === "success"
+      validate.status_name === "success"
     ) {
-      onAdd(contact);
+      onAdd(contract);
     }
   };
 
@@ -93,6 +94,11 @@ export default function AddContractForm({ onAdd, onClose }) {
   };
 
   const setContact = (record) => {
+    setValidate({
+      ...validate,
+      id_contact: record.id != "" ? "success" : "error",
+    });
+
     setContract({
       ...contract,
       id_contact: record.id,
@@ -101,6 +107,11 @@ export default function AddContractForm({ onAdd, onClose }) {
   };
 
   const setPartner = (record) => {
+    setValidate({
+      ...validate,
+      id_partner: record.id != "" ? "success" : "error",
+    });
+
     setContract({
       ...contract,
       id_partner: record.id,
@@ -130,7 +141,7 @@ export default function AddContractForm({ onAdd, onClose }) {
                   handleChange(e);
                 }}
                 onKeyPress={(event) => {
-                  if (!/[0-9/]/.test(event.key)) {
+                  if (!/[0-9/-]/.test(event.key)) {
                     event.preventDefault();
                   }
                 }}
@@ -143,16 +154,22 @@ export default function AddContractForm({ onAdd, onClose }) {
         </Col>
         <Col md={12}>
           <FormGroup>
-            <Label for="partner">Cliente</Label>
-            <FinderPartner changePartner={setPartner} />
+            <Label for="id_partner">Cliente</Label>
+            <FinderPartner
+              id={"id_partner"}
+              changePartner={setPartner}
+              contract={contract}
+            />
           </FormGroup>
         </Col>
         <Col md={12}>
           <FormGroup>
-            <Label for="contact">Contácto</Label>
+            <Label for="id_contact">Contácto</Label>
             <FinderContact
+              id={"id_contact"}
               changeContact={setContact}
               partner_id={contract.id_partner}
+              contract={contract}
             />
           </FormGroup>
         </Col>
@@ -187,27 +204,42 @@ export default function AddContractForm({ onAdd, onClose }) {
         </Col>
         <Col md={12}>
           <FormGroup>
-            <Label for="signuser">Firmado por</Label>
-            <SignUser />
+            <Label for="sign_by">Firmado por</Label>
+            <SignUser
+              id={"sign_by"}
+              handleChange={handleChange}
+              validForm={validForm}
+              valDefault={contract.sign_by}
+            />
           </FormGroup>
         </Col>
         <Col md={12}>
           <FormGroup>
-            <Label for="signdate">Fecha</Label>
+            <Label for="sign_date">Fecha</Label>
             <InputGroup size="sm">
               <Input
-                id="signdate"
-                name="signdate"
+                id="sign_date"
+                name="sign_date"
                 placeholder="Fecha de Firma"
                 type="date"
+                value={contract.sign_date}
+                onChange={(e) => {
+                  validForm(e);
+                  handleChange(e);
+                }}
               />
             </InputGroup>
           </FormGroup>
         </Col>
         <Col sm="12">
           <FormGroup>
-            <Label for="status">Estado</Label>
-            <ContractStatus />
+            <Label for="status_name">Estado</Label>
+            <ContractStatus
+              id={"status_name"}
+              handleChange={handleChange}
+              validForm={validForm}
+              valDefault={contract.status_name}
+            />
           </FormGroup>
         </Col>
       </ModalBody>

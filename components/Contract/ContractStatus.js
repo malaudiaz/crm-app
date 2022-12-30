@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { InputGroup, Input, FormFeedback } from "reactstrap";
 import axios from "axios";
 
-export default function ContractStatus() {
+export default function ContractStatus({id, handleChange, validForm, valDefault}) {
   const mounted = useRef(false);
   const [records, setRecords] = useState([]);
 
@@ -31,10 +31,19 @@ export default function ContractStatus() {
 
   return (
     <InputGroup size="sm">
-      <Input id="status" name="status" type="select">
+      <Input  
+        id={id}
+        name={id}
+        type="select"
+        value={valDefault}
+        onChange={(e) => {
+          validForm(e);
+          handleChange(e);
+        }}
+      >
         <option value="">Seleccione...</option>
         {records.map((record, i) => {
-           return <option key={i} value={record.id}>{record.description}</option>;
+           return <option key={i} value={record.name}>{record.description}</option>;
         })}
       </Input>
       <FormFeedback>

@@ -1,19 +1,19 @@
 
 import { useState, useEffect, useRef } from "react";
-import { jwtVerify } from "jose";
 import Layout from "../../components/Core/Layout";
 import PageTitle from "../../components/Core/Pagetitle";
 import DataTable from "../../components/Core/DataTable";
 import Pagination from "../../components/Core/Pagination";
 import ModalForm from "../../components/Core/ModalForm";
-import DeleteForm from "../../components/Core/DeleteForm";
 import TableTool from "../../components/Core/TableTool";
 import AddUserForm from "../../components/Users/AddUser";
 import EditUserForm from "../../components/Users/EditUser";
 import FindUserForm from "../../components/Users/FindUser";
+import { getServerProps } from "../_common";
 
 import axios from "axios";
-import swal from "sweetalert";
+import Swal from 'sweetalert2'
+
 import LoadingForm from "../../components/Core/Loading";
 
 const columns = [
@@ -25,7 +25,7 @@ const columns = [
   { id: 6, title: "Teléfono", accessor: "phone" },
 ];
 
-export default function List({ user }) {
+export default function List({ user, rowsPerPage }) {
   const [loading, setLoading] = useState(false);
   const [records, setRecords] = useState([]);
   const [page, setPage] = useState(1);
@@ -41,7 +41,6 @@ export default function List({ user }) {
   const [openFind, setOpenFind] = useState(false);
   const [findMode, setFindMode] = useState(false);
 
-  const rowsPerPage = 10;
   const mounted = useRef(false);
 
   useEffect(() => {
@@ -63,8 +62,14 @@ export default function List({ user }) {
  
         setReload(false);
       } catch (error) {
-        swal("Error", "ha ocurrido un error al consultar el API", "error");
-      }
+        setLoading(false);
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al consultar la API',
+          showConfirmButton: true,
+        });              }
     };
 
     if (!mounted.current) {
@@ -108,17 +113,24 @@ export default function List({ user }) {
       const res = await axios.post(url, users);
       if (res.status === 200) {
         setLoading(false);
-        swal(
-          "Operación Exitosa",
-          "El usuario se ha creado con éxito",
-          "success"
-        );
+        Swal.fire({
+          icon: 'success',
+          title: 'Operación Exitosa',
+          text: 'El usuario se ha creado con éxito',
+          showConfirmButton: true,
+        })                        
         setOpenAdd(false);
         setReload(true);
       }
     } catch (errors) {
       console.log(errors);
-      swal("Error", "Ha ocurrido un error con la API", "error");
+      setLoading(false);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ha ocurrido un error al consultar la API',
+        showConfirmButton: true,
+      });
     }
   };
 
@@ -133,32 +145,59 @@ export default function List({ user }) {
         setReload(true);
       } catch (errors) {
         setLoading(false);
-        swal("Error", "Ha ocurrido un error con la API", "error");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al consultar la API',
+          showConfirmButton: true,
+        });
       }
 
       setOpenEdit(false);
-      swal("Operación Exitosa", "Cambios guardados con éxito", "success");
+      Swal.fire({
+        icon: 'success',
+        title: 'Operación Exitosa',
+        text: 'Cambios guardados con éxito',
+        showConfirmButton: true,
+      });           
       setReload(true);
     });
   };
 
-  const delUsers = (e) => {
-    e.preventDefault();
+  const delUsers = async () => {
     setLoading(true);
 
-    selectedList.map(async (row) => {
+    if (selectedList.length > 0) {
+      const row = selectedList[0];
+
+      setLoading(true);
+
       const url = `/api/users/services?id=${row.id}`
-      try {
-        await axios.delete(url);
-        setLoading(false);
-      } catch (errors) {
-        setLoading(false);
-        swal("Error", "Ha ocurrido un error con la API", "error");
-      }
-      setOpenDelete(false);
-      swal("Operación Exitosa", "Usuario eliminado con éxito", "success");
-      setReload(true);
-    });
+      await axios
+        .delete(url)
+        .then((res) => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Operación Exitosa',
+            text: 'Usuario eliminado con éxito',
+            showConfirmButton: true,
+          });                     
+          setLoading(false);
+        })
+        .catch((errors) => {
+          setLoading(false);
+          
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ha ocurrido un error al consultar la API',
+            showConfirmButton: true,
+          });           
+            
+        });
+
+        setReload(true);
+    }
   };
 
   const findUsers = (filter) => {
@@ -194,7 +233,22 @@ export default function List({ user }) {
 
   const openDelUser = (e) => {
     e.preventDefault;
-    setOpenDelete(true);
+    Swal.fire({
+      title: '¿ Estás seguro ?',
+      text: "! Esta opción no podrá ser revertida !",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',      
+      reverseButtons: true,
+      allowOutsideClick: false
+    }).then((result) => {
+      if (result.isConfirmed) {
+        delUsers(e);
+      }     
+    })    
   }
 
   const closeAddUser = () => {
@@ -268,17 +322,6 @@ export default function List({ user }) {
       </ModalForm>
 
       <ModalForm
-        id={"deleteUserForm"}
-        open={openDelete}
-      >
-        <DeleteForm
-          title={"Eliminar Usuarios"}
-          onDelete={delUsers}
-          onClose={closeDelUser}
-        />
-      </ModalForm>
-
-      <ModalForm
         id={"findUserForm"}
         open={openFind}
       >
@@ -301,25 +344,5 @@ export default function List({ user }) {
   );
 }
 export async function getServerSideProps({ req, res }) {
-  const { crmToken } = req.cookies;
-  try {
-    const { payload } = await jwtVerify(
-      crmToken,
-      new TextEncoder().encode(process.env.TOKEN_SECRET)
-    );
-
-    return {
-      props: {
-        user: {
-          username: payload.username,
-          fullname: payload.fullname,
-          job: payload.job,
-        }
-      }
-    };
-  } catch (error) {
-    return {
-      props: { user: { username: "", fullname: "", job: payload.job } },
-    };
-  }
+  return getServerProps(req, res);
 }

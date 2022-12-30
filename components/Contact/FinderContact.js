@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 import {
   ModalHeader,
@@ -16,14 +16,14 @@ import ModalForm from "../Core/ModalForm";
 import DataTable from "../Core/DataTable";
 import Pagination from "../Core/Pagination";
 import axios from "axios";
-import swal from "sweetalert";
+import Swal from 'sweetalert2'
 
 const columns = [
   { id: 1, title: "Nombre", accessor: "name" },
   { id: 2, title: "DNI", accessor: "dni" },
 ];
 
-export default function FinderContact({ changeContact, partner_id }) {
+export default function FinderContact({ id, changeContact, contract }) {
   const [loading, setLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const [records, setRecords] = useState([]);
@@ -33,48 +33,43 @@ export default function FinderContact({ changeContact, partner_id }) {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const mounted = useRef(false);
   const rowsPerPage = 10;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const url = `/api/contacts/services?page=${page}&per_page=${rowsPerPage}&partner_id=${partner_id}`;
-      setLoading(true);
-      try {
-        const { data } = await axios.get(url);
-        setLoading(false);
+  const fetchData = async () => {
+    const url = `/api/contacts/services?page=${page}&per_page=${rowsPerPage}&partner_id=${contract.id_partner}`;
+    setLoading(true);
+    try {
+      const { data } = await axios.get(url);
+      setLoading(false);
 
-        setTotal(data.result.total);
-        setTotalPages(data.result.total_pages);
-        setRecords(data.result.data);
+      setTotal(data.result.total);
+      setTotalPages(data.result.total_pages);
+      setRecords(data.result.data);
 
-        if (data.result.data.length == 0) {
-          swal(
-            "Información",
-            "No existen contáctos que cumplan con el críterio de búsqueda",
-            "info"
-          );
-        }
-      } catch (error) {
-        console.log(error);
-        setLoading(false);
-        swal("Error", "ha ocurrido un error al consultar el API", "error");
+      if (data.result.data.length == 0) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Información',
+          text: 'No existen contáctos que cumplan con el críterio de búsqueda',
+          showConfirmButton: true,
+        });           
       }
-    };
-
-    if (!mounted.current) {
-      // do componentDidMount logic
-      if (partner_id) {
-        mounted.current = true;
-        fetchData();
-      }
-    } else {
-      // do componentDidUpdate logic
-      if (reload) {
-        fetchData();
-      }
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ha ocurrido un error al consultar la API',
+        showConfirmButton: true,
+      });           
     }
-  });
+  };
+
+
+  useEffect(() => {
+    setContact(contract.name_contact);
+  },[contract.name_contact]);
 
   const onChangePage = (pageNumber) => {
     setPage(pageNumber);
@@ -82,15 +77,20 @@ export default function FinderContact({ changeContact, partner_id }) {
   };
 
   const onOpenFinder = () => {
-    if (partner_id !== "") {
+    if (contract.id_partner !== "") {
+        fetchData();      
         setOpenFinderPartner(true);
     } else {
-        swal("Atención", "Debe seleccionar un cliente, antes de seleccionar el contácto", "info");
+      Swal.fire({
+        icon: 'info',
+        title: 'Atención',
+        text: 'Debe seleccionar un cliente, antes de seleccionar el contácto',
+        showConfirmButton: true,
+      });         
     }
   };
 
   const onCloseFinder = () => {
-    mounted.current = false;
     setRecord(null);
     setRecords([]);
     setOpenFinderPartner(false);
@@ -123,8 +123,9 @@ export default function FinderContact({ changeContact, partner_id }) {
   return (
     <InputGroup size="sm">
       <Input
+        id={id}
         type="text"
-        name="contact"
+        name={id}
         placeholder="Contácto"
         value={contact}
         readOnly
