@@ -88,12 +88,13 @@ export default function FindContractForm({ onFind, onClose }) {
                   }}
                 >
                   <option value="">Seleccione...</option>
-                  <option value="username">Nombre de Usuario</option>
-                  <option value="fullname">Nombre Completo</option>
-                  <option value="dni">DNI</option>
+                  <option value="number">Número de Contrato</option>
+                  <option value="partner">Cliente</option>
+                  <option value="contact">Contácto</option>
+                  <option value="status_description">Estado</option>
                 </Input> 
                 <FormFeedback>
-                  Por favor entre seleccione el críterio para el filtro.
+                  Por favor seleccione el críterio para el filtro.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
@@ -120,7 +121,7 @@ export default function FindContractForm({ onFind, onClose }) {
                 >
                 </Input>              
                 <FormFeedback>
-                  Por favor teclee el valor del críterio para el filtro.
+                  Por favor, teclee el valor del críterio para el filtro.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>

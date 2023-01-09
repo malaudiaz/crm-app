@@ -239,6 +239,7 @@ export default function FinderPartner({ id, changePartner, contract }) {
                       }}
                     >
                       <option value="">Seleccione...</option>
+                      <option value="type">Tipo</option>
                       <option value="name">Nombre</option>
                       <option value="dni">DNI | NIF</option>
                     </Input>
@@ -253,11 +254,11 @@ export default function FinderPartner({ id, changePartner, contract }) {
               <FormGroup row>
                 <Label for="criteria_value" size="sm" sm={3}>
                 {
-                  filter.criteria_key === "name"
+                  filter.criteria_key === "type"
+                    ? "Tipo"
+                    : filter.criteria_key === "name"
                     ? "Nombre"
-                    : filter.criteria_key === "dni"
-                    ? "DNI | NIF"
-                    : "Críterio"
+                    : filter.criteria_key === "dni" ? "DNI | NIF" : "Críterio"
                 }
                 </Label>
                 <Col sm={9}>
@@ -267,11 +268,11 @@ export default function FinderPartner({ id, changePartner, contract }) {
                       name="criteria_value"
                       id="criteria_value"
                       placeholder={
-                        filter.criteria_key === "name"
-                          ? "Nombre"
-                          : filter.criteria_key === "dni"
-                          ? "DNI | NIF"
-                          : ""
+                        filter.criteria_key === "type"
+                        ? "Tipo"
+                        : filter.criteria_key === "name"
+                        ? "Nombre"
+                        : filter.criteria_key === "dni" ? "DNI | NIF" : "Críterio"
                       }
                       valid={validate.criteria_value === "success"}
                       invalid={validate.criteria_value === "error"}

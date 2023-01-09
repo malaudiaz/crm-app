@@ -1,5 +1,13 @@
 import { jwtVerify } from "jose";
 
+const config = {
+  headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "accept-Language": "es-ES,es;"
+  }
+}
+
 const getToken = async ( {crmToken} ) => {
     try {
         const { payload } = await jwtVerify(
@@ -13,15 +21,7 @@ const getToken = async ( {crmToken} ) => {
         console.log(errors)
         return ""
     }    
-};
-
-const config = {
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-      "accept-Language": "es-ES,es;"
-    }
-};
+}
 
 const getServerProps = async (req, res) => {
     const { crmToken } = req.cookies;
@@ -33,6 +33,7 @@ const getServerProps = async (req, res) => {
       return {
         props: {
           user: {
+            userid: payload.userid,
             username: payload.username,
             fullname: payload.fullname,
             job: payload.job,
@@ -48,4 +49,4 @@ const getServerProps = async (req, res) => {
 }
 
 
-export {getToken, config, getServerProps}
+export {config, getToken, getServerProps}

@@ -118,6 +118,8 @@ function Messages() {
 
 export default function Topbar({user}) {
 
+  const avatar = `/profile/${user.userid}.jpg`;
+
   const toggle = () => {
     const select = (el, all = false) => {
       el = el.trim()
@@ -140,36 +142,13 @@ export default function Topbar({user}) {
         <i className="bi bi-list toggle-sidebar-btn" onClick={toggle}></i>
       </div>
 
-      {/* <div className="search-bar">
-        <form
-          className="search-form d-flex align-items-center"
-          method="POST"
-          action="#"
-        >
-          <input
-            type="text"
-            name="query"
-            placeholder="Search"
-            title="Enter search keyword"
-          />
-          <button type="submit" title="Search">
-            <i className="bi bi-search"></i>
-          </button>
-        </form>
-      </div> */}
-
       <nav className="header-nav ms-auto">
         <ul className="d-flex align-items-center">
 
-          {/* <li className="nav-item d-block d-lg-none">
-            <a className="nav-link nav-icon search-bar-toggle " href="#">
-              <i className="bi bi-search"></i>
-            </a>
-          </li> */}
 
-          <Notifications />
+          {/* <Notifications />
 
-          <Messages />
+          <Messages /> */}
 
           <li className="nav-item dropdown pe-3">
             <a
@@ -178,7 +157,7 @@ export default function Topbar({user}) {
               data-bs-toggle="dropdown"
             >
               <Image
-                src="/profile-img.jpg"
+                src={avatar}
                 alt="Perfil"
                 width="100%"
                 height="100%"

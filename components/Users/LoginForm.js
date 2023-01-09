@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import swal from 'sweetalert';
+import Swal from 'sweetalert2'
 import { Col, Label, Form, FormGroup, InputGroup, Input, FormFeedback, Button, InputGroupText } from "reactstrap";
 import Password from "../Core/Password";
 
@@ -35,7 +35,12 @@ export default function LoginForm() {
                     router.push("/");
                 }
             } catch(errors) { 
-                swal("Error", "Nombre de usuario o contraseña incorrecta", "error");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Atención',
+                    text: 'Nombre de usuario o contraseña incorrecta',
+                    showConfirmButton: true,
+                });              
             }
         }
     };  

@@ -12,9 +12,10 @@ import FindUserForm from "../../components/Users/FindUser";
 import { getServerProps } from "../_common";
 
 import axios from "axios";
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 
 import LoadingForm from "../../components/Core/Loading";
+import { useAppContext } from "../../components/Core/StateWrapper";
 
 const columns = [
   { id: 1, title: "Usuario", accessor: "username" },
@@ -26,6 +27,8 @@ const columns = [
 ];
 
 export default function List({ user, rowsPerPage }) {
+  const appCtx = useAppContext();
+
   const [loading, setLoading] = useState(false);
   const [records, setRecords] = useState([]);
   const [page, setPage] = useState(1);
@@ -37,7 +40,6 @@ export default function List({ user, rowsPerPage }) {
 
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
   const [openFind, setOpenFind] = useState(false);
   const [findMode, setFindMode] = useState(false);
 
@@ -55,6 +57,7 @@ export default function List({ user, rowsPerPage }) {
       try {
         const {data} = await axios.get(url);
         setLoading(false);
+        appCtx.openWait();
 
         setTotal(data.result.total);
         setTotalPages(data.result.total_pages);
@@ -69,7 +72,8 @@ export default function List({ user, rowsPerPage }) {
           title: 'Error',
           text: 'Ha ocurrido un error al consultar la API',
           showConfirmButton: true,
-        });              }
+        });              
+      }
     };
 
     if (!mounted.current) {
@@ -257,10 +261,6 @@ export default function List({ user, rowsPerPage }) {
 
   const closeEditUser = () => {
     setOpenEdit(false);
-  }
-
-  const closeDelUser = () => {
-    setOpenDelete(false);
   }
 
   const closeFindUser = () => {

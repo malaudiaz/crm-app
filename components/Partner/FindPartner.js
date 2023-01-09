@@ -88,11 +88,12 @@ export default function FindPartnerForm({ onFind, onClose }) {
                   }}
                 >
                   <option value="">Seleccione...</option>
+                  <option value="type">Tipo</option>
                   <option value="name">Nombre</option>
-                  <option value="dni">DNI</option>
+                  <option value="dni">DNI | NIF</option>
                 </Input> 
                 <FormFeedback>
-                  Por favor entre seleccione el críterio para el filtro.
+                  Por favor entre el críterio para el filtro.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>

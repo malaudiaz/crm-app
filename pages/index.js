@@ -1,7 +1,7 @@
 import Layout from "../components/Core/Layout";
-import { jwtVerify } from "jose";
 import PageTitle from "../components/Core/Pagetitle";
 import Infocard from "../components/Dashboard/Infocard";
+import { getServerProps } from "./_common";
 
 export default function Home({ user }) {
 
@@ -119,24 +119,5 @@ export default function Home({ user }) {
 }
 
 export async function getServerSideProps({ req, res }) {
-  const { crmToken } = req.cookies;
-  try {
-    const { payload } = await jwtVerify(
-      crmToken,
-      new TextEncoder().encode(process.env.TOKEN_SECRET)
-    );
-    return {
-      props: {
-        user: {
-          username: payload.username,
-          fullname: payload.fullname,
-          job: payload.job,
-        },
-      },
-    };
-  } catch (error) {
-    return {
-      props: { user: { username: "", fullname: "", job: payload.job } },
-    };
-  }
+  return getServerProps(req, res);
 }
