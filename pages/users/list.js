@@ -57,7 +57,6 @@ export default function List({ user, rowsPerPage }) {
       try {
         const {data} = await axios.get(url);
         setLoading(false);
-        appCtx.openWait();
 
         setTotal(data.result.total);
         setTotalPages(data.result.total_pages);

@@ -6,6 +6,7 @@ import { Col, Label, Form, FormGroup, InputGroup, Input, FormFeedback, Button, I
 import Password from "../Core/Password";
 
 export default function LoginForm() {
+
     const [credentials, setCredentials] = useState({
         username: "",
         password: "",
@@ -31,7 +32,7 @@ export default function LoginForm() {
         if (validate.username === "success" && validate.password === "success") {
             try {
                 const res = await axios.post("/api/auth/login", credentials);   
-                if (res.status === 200) {
+                if (res.status === 200) {                   
                     router.push("/");
                 }
             } catch(errors) { 

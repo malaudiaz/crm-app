@@ -4,7 +4,6 @@ import Infocard from "../components/Dashboard/Infocard";
 import { getServerProps } from "./_common";
 
 export default function Home({ user }) {
-
   return (
     <Layout user={user}>
       <PageTitle title={"Panel Informativo"} />

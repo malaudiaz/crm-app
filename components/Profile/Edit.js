@@ -93,7 +93,7 @@ export default function EditProfile({ profile, setProfile }) {
 
   return (
     <div className="profile-edit pt-3" id="profile-edit">
-      <Form onSubmit={handleUpload} enctype="multipart/form-data">
+      <Form onSubmit={handleUpload} encType="multipart/form-data">
         <Row>
           <FormGroup row>
             <Label size="sm" sm={3}>

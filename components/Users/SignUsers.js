@@ -13,7 +13,7 @@ export default function SignUser({ id, handleChange, validForm, valDefault }) {
       try {
         const { data } = await axios.get(url);
         // setLoading(false);
-        setRecords(data.result);
+        setRecords(data.result.data);
       } catch (error) {
         console.log(error);
         // setLoading(false);
