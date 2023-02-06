@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getToken, config } from "../../_common";
+import { config } from "../../_common";
 import fs from "fs";
 
 const getProfile = async (req, res) => {
@@ -76,25 +76,30 @@ const changePassword = async (req, res) => {
 };
 
 export default async function profilemgr(req, res) {
-  const token = await getToken(req.cookies);
-  if (token) {
-    config.headers["authorization"] = `Bearer ${token}`;
+  if (req.headers["authorization"]) {
+    config.headers["Authorization"] = req.headers["authorization"];
+
+    switch (req.method) {
+      case "GET":
+        return getProfile(req, res);
+        break;
+      case "POST":
+        return changePassword(req, res);
+        break;
+      case "PUT":
+        return updProfile(req, res);
+        break;
+      default:
+        res.status(405).json({
+          mensaje: `El método HTTP ${req.method} no esta disponible en esta ruta`,
+        });
+        break;
+    }
+
+  } else {
+    res.status(401).json({
+      mensaje: 'Esquema de Autentificación erróneo',
+    });
   }
 
-  switch (req.method) {
-    case "GET":
-      return getProfile(req, res);
-      break;
-    case "POST":
-      return changePassword(req, res);
-      break;
-    case "PUT":
-      return updProfile(req, res);
-      break;
-    default:
-      res.status(405).json({
-        mensaje: `El método HTTP ${req.method} no esta disponible en esta ruta`,
-      });
-      break;
-  }
 }

@@ -1,12 +1,12 @@
 import Link from "next/link";
 
-export default function Menucard({items}) {
+export default function Menucard({title, items}) {
     return (
         <div className="filter">
             <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <li className="dropdown-header text-start">
-                    <h6>Filtrar</h6>
+                    <h6>{title}</h6>
                 </li>
                 {
                     items.map( ({text}, i) => (

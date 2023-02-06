@@ -1,7 +1,6 @@
+import { useState, useContext, useEffect, useRef } from "react";
+import Layout from "../../layouts/Layout";
 
-import { useState, useEffect, useRef } from "react";
-import Layout from "../../components/Core/Layout";
-import PageTitle from "../../components/Core/Pagetitle";
 import DataTable from "../../components/Core/DataTable";
 import Pagination from "../../components/Core/Pagination";
 import ModalForm from "../../components/Core/ModalForm";
@@ -9,25 +8,17 @@ import TableTool from "../../components/Core/TableTool";
 import AddUserForm from "../../components/Users/AddUser";
 import EditUserForm from "../../components/Users/EditUser";
 import FindUserForm from "../../components/Users/FindUser";
-import { getServerProps } from "../_common";
+
+import AppContext from "../../AppContext";
+import { getSession } from "next-auth/react";
 
 import axios from "axios";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 import LoadingForm from "../../components/Core/Loading";
-import { useAppContext } from "../../components/Core/StateWrapper";
 
-const columns = [
-  { id: 1, title: "Usuario", accessor: "username" },
-  { id: 2, title: "Nombre", accessor: "fullname" },
-  { id: 3, title: "DNI", accessor: "dni" },
-  { id: 4, title: "Cargo", accessor: "job" },
-  { id: 5, title: "Correo", accessor: "email" },
-  { id: 6, title: "Teléfono", accessor: "phone" },
-];
-
-export default function List({ user, rowsPerPage }) {
-  const appCtx = useAppContext();
+export default function List({ session, rowsPerPage }) {
+  const value = useContext(AppContext);
 
   const [loading, setLoading] = useState(false);
   const [records, setRecords] = useState([]);
@@ -45,33 +36,44 @@ export default function List({ user, rowsPerPage }) {
 
   const mounted = useRef(false);
 
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "accept-Language": "es-ES,es;",
+      Authorization: `Bearer ${session.token}`,
+    },
+  };
+
   useEffect(() => {
+    value.setLanguageSelected(session.locale);
+
     const fetchData = async () => {
-      const url = `/api/users/services?page=${page}&per_page=${rowsPerPage}`
-      
+      const url = `/api/users/services?page=${page}&per_page=${rowsPerPage}`;
+
       if (params != "") {
         url = url + params;
       }
       setLoading(true);
 
       try {
-        const {data} = await axios.get(url);
+        const { data } = await axios.get(url, config);
         setLoading(false);
 
         setTotal(data.result.total);
         setTotalPages(data.result.total_pages);
         setRecords(data.result.data);
- 
+
         setReload(false);
       } catch (error) {
         setLoading(false);
 
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ha ocurrido un error al consultar la API',
+          icon: "error",
+          title: "Error",
+          text: "Ha ocurrido un error al consultar la API",
           showConfirmButton: true,
-        });              
+        });
       }
     };
 
@@ -86,6 +88,17 @@ export default function List({ user, rowsPerPage }) {
       }
     }
   });
+
+  const t = value.state.languages.users;
+
+  const columns = [
+    { id: 1, title: t.user, accessor: "username" },
+    { id: 2, title: t.name, accessor: "fullname" },
+    { id: 3, title: t.dni, accessor: "dni" },
+    { id: 4, title: t.job, accessor: "job" },
+    { id: 5, title: t.email, accessor: "email" },
+    { id: 6, title: t.phone, accessor: "phone" },
+  ]; 
 
   const onChangePage = (pageNumber) => {
     setPage(pageNumber);
@@ -113,25 +126,24 @@ export default function List({ user, rowsPerPage }) {
     const url = "/api/users/services";
 
     try {
-      const res = await axios.post(url, users);
+      const res = await axios.post(url, users, config);
       if (res.status === 200) {
         setLoading(false);
         Swal.fire({
-          icon: 'success',
-          title: 'Operación Exitosa',
-          text: 'El usuario se ha creado con éxito',
+          icon: "success",
+          title: t.addTitle,
+          text: t.addSuccess,
           showConfirmButton: true,
-        })                        
+        });
         setOpenAdd(false);
         setReload(true);
       }
     } catch (errors) {
-      console.log(errors);
       setLoading(false);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Ha ocurrido un error al consultar la API',
+        icon: "error",
+        title: t.addTitle,
+        text: t.addError,
         showConfirmButton: true,
       });
     }
@@ -140,29 +152,29 @@ export default function List({ user, rowsPerPage }) {
   const editUser = async (users) => {
     setLoading(true);
     selectedList.map(async (row) => {
-      const url = `/api/users/services?id=${row.id}`
+      const url = `/api/users/services?id=${row.id}`;
       try {
-        await axios.put(url, users);
+        await axios.put(url, users, config);
         setLoading(false);
         setOpenAdd(false);
         setReload(true);
       } catch (errors) {
         setLoading(false);
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ha ocurrido un error al consultar la API',
+          icon: "error",
+          title: t.editTitle,
+          text: t.editError,
           showConfirmButton: true,
         });
       }
 
       setOpenEdit(false);
       Swal.fire({
-        icon: 'success',
-        title: 'Operación Exitosa',
-        text: 'Cambios guardados con éxito',
+        icon: "success",
+        title: t.editTitle,
+        text: t.editSuccess,
         showConfirmButton: true,
-      });           
+      });
       setReload(true);
     });
   };
@@ -175,31 +187,30 @@ export default function List({ user, rowsPerPage }) {
 
       setLoading(true);
 
-      const url = `/api/users/services?id=${row.id}`
+      const url = `/api/users/services?id=${row.id}`;
       await axios
-        .delete(url)
+        .delete(url, config)
         .then((res) => {
           Swal.fire({
-            icon: 'success',
-            title: 'Operación Exitosa',
-            text: 'Usuario eliminado con éxito',
+            icon: "success",
+            title: t.delTitle,
+            text: t.delSuccess,
             showConfirmButton: true,
-          });                     
+          });
           setLoading(false);
         })
         .catch((errors) => {
           setLoading(false);
-          
+
           Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ha ocurrido un error al consultar la API',
+            icon: "error",
+            title: t.delTitle,
+            text: t.delError,
             showConfirmButton: true,
-          });           
-            
+          });
         });
 
-        setReload(true);
+      setReload(true);
     }
   };
 
@@ -222,110 +233,104 @@ export default function List({ user, rowsPerPage }) {
   const openAddUser = (e) => {
     e.preventDefault;
     setOpenAdd(true);
-  }
+  };
 
   const openEditUser = (e) => {
     e.preventDefault;
     setOpenEdit(true);
-  }
+  };
 
   const openFindUser = (e) => {
     e.preventDefault;
     setOpenFind(true);
-  }
+  };
 
   const openDelUser = (e) => {
     e.preventDefault;
     Swal.fire({
-      title: '¿ Estás seguro ?',
-      text: "! Esta opción no podrá ser revertida !",
-      icon: 'warning',
+      title: t.delMessage,
+      text: t.delWarning,
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Sí',
-      cancelButtonText: 'No',
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',      
+      confirmButtonText: "Sí",
+      cancelButtonText: "No",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
       reverseButtons: true,
-      allowOutsideClick: false
+      allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
         delUsers(e);
-      }     
-    })    
-  }
+      }
+    });
+  };
 
   const closeAddUser = () => {
     setOpenAdd(false);
-  }
+  };
 
   const closeEditUser = () => {
     setOpenEdit(false);
-  }
+  };
 
   const closeFindUser = () => {
     setParams("");
     setOpenFind(false);
     setFindMode(false);
     setReload(true);
-  }
+  };
 
   return (
-    <Layout user={user}>
-      <PageTitle title={"Usuarios"} except={"Usuarios"} />
+    <Layout user={session} title={t.title}>
       <div className="row">
         <div className="container">
           <div className="table-responsive">
-          <div className="table-wrapper">
-                <div className="table-title">
-                  <TableTool
-                    title={"Usuarios"}
-                    openForm={openAddUser}
-                    openFind={openFindUser}
-                    closFind={closeFindUser}
-                    isFindMode={findMode}
-                  />
-                </div>
-                <DataTable
-                  tableId={"users"}
-                  records={records}
-                  columns={columns}
-                  onItemCheck={onItemCheck}
-                  onEdit={openEditUser}
-                  onDelete={openDelUser}
+            <div className="table-wrapper">
+              <div className="table-title">
+                <TableTool
+                  title={t.title}
+                  openForm={openAddUser}
+                  openFind={openFindUser}
+                  closFind={closeFindUser}
+                  isFindMode={findMode}
                 />
+              </div>
+              <DataTable
+                tableId={"users"}
+                records={records}
+                columns={columns}
+                onItemCheck={onItemCheck}
+                onEdit={openEditUser}
+                onDelete={openDelUser}
+              />
 
-                <Pagination
-                  onChangePage={onChangePage}
-                  currentPage={page}
-                  totalPage={totalPages}
-                  totalCount={total}
-                  rowsPerPage={rowsPerPage}
-                />
+              <Pagination
+                onChangePage={onChangePage}
+                currentPage={page}
+                totalPage={totalPages}
+                totalCount={total}
+                rowsPerPage={rowsPerPage}
+              />
             </div>
           </div>
         </div>
       </div>
 
-      <ModalForm
-        id={"addUserForm"}
-        open={openAdd}
-      >
+      <ModalForm id={"addUserForm"} open={openAdd}>
         <AddUserForm onAdd={addUser} onClose={closeAddUser} />
       </ModalForm>
 
-      <ModalForm
-        id={"editUserForm"}
-        open={openEdit}
-      >
-        <EditUserForm record={selectedList} onEdit={editUser} onClose={closeEditUser} />
+      <ModalForm id={"editUserForm"} open={openEdit}>
+        <EditUserForm
+          record={selectedList}
+          onEdit={editUser}
+          onClose={closeEditUser}
+        />
       </ModalForm>
 
-      <ModalForm
-        id={"findUserForm"}
-        open={openFind}
-      >
+      <ModalForm id={"findUserForm"} open={openFind}>
         <FindUserForm
-          onFind={findUsers} 
+          onFind={findUsers}
           isFindMode={findMode}
           onClose={closeFindUser}
         />
@@ -334,14 +339,26 @@ export default function List({ user, rowsPerPage }) {
       <LoadingForm
         id={"loading"}
         open={loading}
-        size='sm'
+        size="sm"
         waitMsg={"Por favor, espere"}
       />
-
-
     </Layout>
   );
 }
-export async function getServerSideProps({ req, res }) {
-  return getServerProps(req, res);
-}
+
+export const getServerSideProps = async (context) => {
+  const session = await getSession(context);
+  if (!session)
+    return {
+      redirect: {
+        destination: "/users/login",
+        permanent: false,
+      },
+    };
+  return {
+    props: {
+      session,
+      rowsPerPage: process.env.ROW_PER_PAGE,
+    },
+  };
+};

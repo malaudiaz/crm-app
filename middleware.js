@@ -1,25 +1,14 @@
-// middleware.ts
-import { NextResponse } from "next/server";
-import { jwtVerify } from "jose";
+import { NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 
-export async function middleware(request) {
+export async function middleware(req) {
+  const session = await getToken({ req: req, secret: process.env.SECRET }); 
 
-  const jwt = request.cookies.get("crmToken");
+  if (!session) return NextResponse.redirect(new URL("/users/login", req.url))
 
-  if (!jwt) return NextResponse.redirect(new URL("/users/login", request.url));
-
-  try {
-    const { payload } = await jwtVerify(
-      jwt,
-      new TextEncoder().encode(process.env.TOKEN_SECRET)
-    );
-    return NextResponse.next();
-  } catch (error) {   
-    return NextResponse.redirect(new URL("/users/login", request.url));
-  }
-
+  return NextResponse.next()
 }
 
 export const config = {
-  matcher: ["/", "/private"],
+  matcher: ["/"],
 };

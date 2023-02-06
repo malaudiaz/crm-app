@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import AppContext from "../../AppContext";
 import {
   ModalHeader,
   ModalBody,
@@ -15,6 +16,9 @@ import {
 } from "reactstrap";
 
 export default function AddUserForm({ onAdd, onClose }) {
+  const ctx = useContext(AppContext);
+  const t = ctx.state.languages.userform;
+
   const [users, setUsers] = useState({
     username: "",
     fullname: "",
@@ -80,18 +84,18 @@ export default function AddUserForm({ onAdd, onClose }) {
 
   return (
     <Form className="form" onSubmit={handleSubmit}>
-      <ModalHeader toggle={onClose}>Nuevo Usuario</ModalHeader>
+      <ModalHeader toggle={onClose}>{t.newTitle}</ModalHeader>
       <ModalBody>
         <Row>
           <Col md={6}>
             <FormGroup>
-              <Label>Nombre de Usuario</Label>
+              <Label>{t.userName}</Label>
               <InputGroup size="sm">
                 <Input
                   type="text"
                   name="username"
                   id="username"
-                  placeholder="Nombre de Usuario"
+                  placeholder={t.userName}
                   valid={validate.username === "success"}
                   invalid={validate.username === "error"}
                   value={users.username}
@@ -106,21 +110,21 @@ export default function AddUserForm({ onAdd, onClose }) {
                   }}
                 />
                 <FormFeedback>
-                  Por favor teclee el nombre de usuario.
+                  {t.userNameFeed}
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
           </Col>
           <Col md={6}>
             <FormGroup>
-              <Label>DNI</Label>
+              <Label>{t.dni}</Label>
               <InputGroup size="sm">
                 <Input
                   type="text"
                   name="dni"
                   id="dni"
                   maxLength={11}
-                  placeholder="DNI"
+                  placeholder={t.dni}
                   valid={validate.dni === "success"}
                   invalid={validate.dni === "error"}
                   value={users.dni}
@@ -134,7 +138,7 @@ export default function AddUserForm({ onAdd, onClose }) {
                     }
                   }}
                 />
-                <FormFeedback>Por favor entre el DNI del usuario.</FormFeedback>
+                <FormFeedback>{t.dniFeed}</FormFeedback>
               </InputGroup>
             </FormGroup>
           </Col>
@@ -142,13 +146,13 @@ export default function AddUserForm({ onAdd, onClose }) {
 
         <Col md={12}>
           <FormGroup>
-            <Label>Nombre y Apellidos</Label>
+            <Label>{t.fullName}</Label>
             <InputGroup size="sm">
               <Input
                 type="text"
                 name="fullname"
                 id="fullname"
-                placeholder="Nombre y Apellidos"
+                placeholder={t.fullName}
                 valid={validate.fullname === "success"}
                 invalid={validate.fullname === "error"}
                 value={users.fullname}
@@ -163,7 +167,7 @@ export default function AddUserForm({ onAdd, onClose }) {
                 }}
               />
               <FormFeedback>
-                Por favor entre el Nombre y los Apellidos del usuario.
+                {t.fullNameFeed}
               </FormFeedback>
             </InputGroup>
           </FormGroup>
@@ -171,13 +175,13 @@ export default function AddUserForm({ onAdd, onClose }) {
 
         <Col md={12}>
           <FormGroup>
-            <Label>Cargo</Label>
+            <Label>{t.job}</Label>
             <InputGroup size="sm">
               <Input
                 type="text"
                 name="job"
                 id="job"
-                placeholder="Cargo"
+                placeholder={t.job}
                 value={users.job}
                 onChange={(e) => {
                   handleChange(e);
@@ -194,13 +198,13 @@ export default function AddUserForm({ onAdd, onClose }) {
 
         <Col md={12}>
           <FormGroup>
-            <Label>Correo</Label>
+            <Label>{t.email}</Label>
             <InputGroup size="sm">
               <Input
                 type="email"
                 name="email"
                 id="email"
-                placeholder="Correo"
+                placeholder={t.email}
                 valid={validate.email === "success"}
                 invalid={validate.email === "error"}
                 value={users.email}
@@ -215,7 +219,7 @@ export default function AddUserForm({ onAdd, onClose }) {
                 }}
               />
               <FormFeedback>
-                Por favor entre el correo del usuario.
+                {t.emailFeed}
               </FormFeedback>
             </InputGroup>
           </FormGroup>
@@ -224,13 +228,13 @@ export default function AddUserForm({ onAdd, onClose }) {
         <Row>
           <Col md={6}>
             <FormGroup>
-              <Label>Teléfono</Label>
+              <Label>{t.phone}</Label>
               <InputGroup size="sm">
                 <Input
                   type="text"
                   name="phone"
                   id="phone"
-                  placeholder="Teléfono"
+                  placeholder={t.phone}
                   maxLength={8}
                   value={users.phone}
                   onChange={(e) => {
@@ -248,13 +252,13 @@ export default function AddUserForm({ onAdd, onClose }) {
 
           <Col md={6}>
             <FormGroup>
-              <Label>Contraseña</Label>
+              <Label>{t.password}</Label>
               <InputGroup size="sm">
                 <Input
                   type="password"
                   name="password"
                   id="password"
-                  placeholder="Contraseña"
+                  placeholder={t.password}
                   valid={validate.password === "success"}
                   invalid={validate.password === "error"}
                   value={users.password}
@@ -264,7 +268,7 @@ export default function AddUserForm({ onAdd, onClose }) {
                   }}
                 />
                 <FormFeedback>
-                  Por favor teclee una contraseña valida.
+                  {t.passwordFeed}
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
@@ -274,10 +278,10 @@ export default function AddUserForm({ onAdd, onClose }) {
 
       <ModalFooter>
         <Button type="button" onClick={onClose} color="secondary">
-          <i className="bi bi-x-circle"></i> Cerrar
+          <i className="bi bi-x-circle"></i> {t.btnClose}
         </Button>
         <Button type="submit" color="primary">
-          <i className="bi bi-check2-circle"></i> Grabar
+          <i className="bi bi-check2-circle"></i> {t.btnSubmit}
         </Button>
       </ModalFooter>
     </Form>

@@ -1,6 +1,10 @@
+import { useContext } from "react";
+import { signOut } from "next-auth/react";
+import AppContext from "../../AppContext";
 import Link from "next/link";
 import Image from "next/image";
 import {notifications, messages} from "../../data";
+import Swal from 'sweetalert2';
 
 function Notifications() {
   return (
@@ -117,8 +121,30 @@ function Messages() {
 }
 
 export default function Topbar({user}) {
+  const value = useContext(AppContext);
+  const t = value.state.languages.header;
 
-  const avatar = `/profile/${user.userid}.jpg`;
+  const avatar = `/profile/${user.id}.jpg`;
+
+  const logOut = (e) => {
+    e.preventDefault();
+
+    Swal.fire({
+      title: t.logOutTitle,
+      text: t.logOutText,
+      icon: 'question',
+      showCancelButton: true,
+      allowOutsideClick: false,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: t.confirmButtonText,
+      cancelButtonText: t.cancelButtonText
+    }).then((result) => {
+      if (result.isConfirmed) {
+        signOut();
+      }
+    })    
+  }
 
   const toggle = () => {
     const select = (el, all = false) => {
@@ -181,7 +207,7 @@ export default function Topbar({user}) {
                   <Link href="/users/profile">
                     <a className="dropdown-item d-flex align-items-center">
                       <i className="bi bi-person"></i>
-                      <span>Mi Perfil</span>
+                      <span>{t.profile}</span>
                     </a>
                   </Link>
               </li>
@@ -189,10 +215,10 @@ export default function Topbar({user}) {
                 <hr className="dropdown-divider" />
               </li>
 
-              <li data-bs-toggle="modal" data-bs-target="#verticalycentered">
+              <li onClick={(e) => logOut(e)}>
                   <a href="#" className="dropdown-item d-flex align-items-center">
                     <i className="bi bi-box-arrow-right"></i>
-                    <span>Desconectarse</span>
+                    <span>{t.logOut}</span>
                   </a>
               </li>
             </ul>

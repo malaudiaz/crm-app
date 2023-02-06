@@ -1,7 +1,11 @@
-import { useState, useEffect, useRef } from "react";
-import Layout from "../../components/Core/Layout";
-import PageTitle from "../../components/Core/Pagetitle";
-import { getServerProps } from "../_common";
+import { useState, useContext, useEffect, useRef } from "react";
+import Layout from "../../layouts/Layout";
+
+import AppContext from "../../AppContext";
+import { getSession } from "next-auth/react";
+
+import axios from "axios";
+import Swal from "sweetalert2";
 
 import {
   Nav,
@@ -20,15 +24,23 @@ import classnames from "classnames";
 import View from "../../components/Profile/View";
 import EditProfile from "../../components/Profile/Edit";
 import ChangePassword from "../../components/Profile/ChangePassword";
-import Swal from "sweetalert2";
-import axios from "axios";
 
-export default function Profile( { user } ) {
+export default function Profile( { session } ) {
+  const value = useContext(AppContext);
 
   const [loading, setLoading] = useState(false);
   const mounted = useRef(false);
   const [activeTab, setActiveTab] = useState("1");
   const [reload, setReload] = useState(false);
+
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "accept-Language": "es-ES,es;",
+      Authorization: `Bearer ${session.token}`,
+    },
+  };  
 
   const [profile, setProfile] = useState({
     id: "",
@@ -49,13 +61,15 @@ export default function Profile( { user } ) {
   };  
 
   useEffect(() => {
+    value.setLanguageSelected(session.locale);
+
     const fetchData = async () => {
-      const url = `/api/profile/services?id=${user.userid}`;      
+      const url = `/api/profile/services?id=${session.id}`;      
       setLoading(true);
 
       try {
-        const {data} = await axios.get(url);
-        const tmp = data.result;
+        const {data} = await axios.get(url, config);
+        const tmp = data.result.data;
       
         profile.id = tmp.id;
         profile.username = tmp.username;
@@ -64,7 +78,7 @@ export default function Profile( { user } ) {
         profile.job = tmp.job;
         profile.email = tmp.email;
         profile.phone = tmp.phone;
-        profile.photo = tmp.photo;
+        profile.photo = "/profile/"+tmp.id+".jpg";
 
         setProfile(profile);
 
@@ -96,12 +110,9 @@ export default function Profile( { user } ) {
   });
 
   return (
-    <Layout user={user}>
-      <PageTitle title={"Pérfil del Usuario"} except={"Usuarios"} />
+    <Layout user={session} title={"Profile"}>
       <section className="section profile">
-
         <Row>
-
           <Col xl={4}>
             <Info profile={profile} />
           </Col>
@@ -166,6 +177,18 @@ export default function Profile( { user } ) {
   );
 }
 
-export async function getServerSideProps({ req, res }) {
-  return getServerProps(req, res);
-}
+export const getServerSideProps = async (context) => {
+  const session = await getSession(context);
+  if (!session)
+    return {
+      redirect: {
+        destination: "/users/login",
+        permanent: false,
+      },
+    };
+  return {
+    props: {
+      session,
+    },
+  };
+};

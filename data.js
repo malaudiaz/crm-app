@@ -1,7 +1,8 @@
+
 export const menus = [
     {
         id:0,
-        text:"Tablero",
+        text:"Home",
         iconClass:"bi bi-grid",
         path:"/",
         hasChild:false,
@@ -10,7 +11,7 @@ export const menus = [
     },
     {
         id:1,
-        text:"Usuarios",
+        text:"Users",
         iconClass:"bi bi-person",
         path:"/users/list",
         hasChild:false,
@@ -19,7 +20,7 @@ export const menus = [
     },
     {
         id:2,
-        text:"Clientes",
+        text:"Partner",
         iconClass:"bi bi-people",
         path:"/partner/list",
         hasChild:false,
@@ -28,7 +29,7 @@ export const menus = [
     },
     {
         id:3,
-        text:"Contratos",
+        text:"Contracts",
         iconClass:"bi bi-file-earmark-medical",
         path:"/contracts/list",
         hasChild:false,
@@ -37,7 +38,7 @@ export const menus = [
     },
     {
         id:4,
-        text:"Perfil",
+        text:"Profile",
         iconClass:"bi bi-person",
         path:"/users/profile",
         hasChild:false,

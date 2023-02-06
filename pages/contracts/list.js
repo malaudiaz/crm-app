@@ -1,19 +1,22 @@
 
-import { useState, useEffect, useRef } from "react";
-import Layout from "../../components/Core/Layout";
-import PageTitle from "../../components/Core/Pagetitle";
+import { useState, useContext, useEffect, useRef } from "react";
+import Layout from "../../layouts/Layout";
+
 import DataTable from "../../components/Core/DataTable";
 import Pagination from "../../components/Core/Pagination";
 import ModalForm from "../../components/Core/ModalForm";
 import TableTool from "../../components/Core/TableTool";
-import { getServerProps } from "../_common";
 
 import AddContractForm from "../../components/Contract/AddContract";
 import EditContractForm from "../../components/Contract/EditContract";
 import FindContractForm from "../../components/Contract/FindContract";
 
+import AppContext from "../../AppContext";
+import { getSession } from "next-auth/react";
+
 import axios from "axios";
 import Swal from 'sweetalert2'
+
 import LoadingForm from "../../components/Core/Loading";
 
 const columns = [
@@ -27,7 +30,9 @@ const columns = [
   { id: 8, title: "Fecha de Firma", accessor: "sign_date"}
 ];
 
-export default function List({ user, rowsPerPage }) {
+export default function List({ session, rowsPerPage }) {
+  const value = useContext(AppContext);
+
   const [loading, setLoading] = useState(false);
   const [records, setRecords] = useState([]);
   const [page, setPage] = useState(1);
@@ -44,7 +49,18 @@ export default function List({ user, rowsPerPage }) {
 
   const mounted = useRef(false);
 
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "accept-Language": "es-ES,es;",
+      Authorization: `Bearer ${session.token}`,
+    },
+  };
+
   useEffect(() => {
+    value.setLanguageSelected(session.locale);
+
     const fetchData = async () => {
       const url = `/api/contracts/services?page=${page}&per_page=${rowsPerPage}`
       if (params != "") {
@@ -53,7 +69,7 @@ export default function List({ user, rowsPerPage }) {
       setLoading(true);
 
       try {
-        const {data} = await axios.get(url);
+        const {data} = await axios.get(url, config);
         setLoading(false);
 
         setTotal(data.result.total);
@@ -110,7 +126,7 @@ export default function List({ user, rowsPerPage }) {
     const url = "/api/contracts/services"
 
     try {
-      const res = await axios.post(url, contract);
+      const res = await axios.post(url, contract, config);
       if (res.status === 200) {
         setLoading(false);
         Swal.fire({
@@ -142,7 +158,7 @@ export default function List({ user, rowsPerPage }) {
       const url = `/api/contracts/services?id=${row.id}`;
 
       await axios
-        .put(url, contract)
+        .put(url, contract, config)
         .then((res) => {
           Swal.fire({
             icon: 'success',
@@ -178,7 +194,7 @@ export default function List({ user, rowsPerPage }) {
 
       const url = `/api/contracts/services?id=${row.id}`
       await axios
-        .delete(url)
+        .delete(url, config)
         .then((res) => {
           Swal.fire({
             icon: 'success',
@@ -276,8 +292,7 @@ export default function List({ user, rowsPerPage }) {
   }
 
   return (
-    <Layout user={user}>
-      <PageTitle title={"Contratos"} except={"Contratos"} />
+    <Layout user={session} title={"Contratos"}>
       <div className="row">
         <div className="container">
           <div className="table-responsive">
@@ -347,6 +362,20 @@ export default function List({ user, rowsPerPage }) {
     </Layout>
   );
 }
-export async function getServerSideProps({ req, res }) {
-  return getServerProps(req, res);
-}
+
+export const getServerSideProps = async (context) => {
+  const session = await getSession(context);
+  if (!session)
+    return {
+      redirect: {
+        destination: "/users/login",
+        permanent: false,
+      },
+    };
+  return {
+    props: {
+      session,
+      rowsPerPage: process.env.ROW_PER_PAGE,
+    },
+  };
+};

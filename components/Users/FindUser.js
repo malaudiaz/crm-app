@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import AppContext from "../../AppContext";
 import {
   ModalHeader,
   ModalBody,
@@ -14,8 +15,9 @@ import {
   Button,
 } from "reactstrap";
 
-
 export default function FindUserForm({ onFind, onClose }) {
+  const ctx = useContext(AppContext);
+  const t = ctx.state.languages.filterform;
 
   const [filter, setFilter] = useState({
     criteria_key: "",
@@ -66,13 +68,13 @@ export default function FindUserForm({ onFind, onClose }) {
 
   return (
     <Form className="form" onSubmit={Find}>
-      <ModalHeader toggle={onClose}>Filtrar</ModalHeader>
+      <ModalHeader toggle={onClose}>{t.title}</ModalHeader>
       <ModalBody>
         <Row>
           <Col md={12}>
             <FormGroup>
               <Label for="key">
-                Filtrar por
+                {t.criteriaKey}
               </Label>
               <InputGroup size="sm">
                 <Input
@@ -87,13 +89,13 @@ export default function FindUserForm({ onFind, onClose }) {
                     handleChange(e);
                   }}
                 >
-                  <option value="">Seleccione...</option>
-                  <option value="username">Nombre de Usuario</option>
-                  <option value="fullname">Nombre Completo</option>
-                  <option value="dni">DNI</option>
+                  <option value="">{t.select}</option>
+                  <option value="username">{t.userName}</option>
+                  <option value="fullname">{t.fullName}</option>
+                  <option value="dni">{t.dni}</option>
                 </Input> 
                 <FormFeedback>
-                  Por favor entre seleccione el críterio para el filtro.
+                  {t.criterialKeyFeed}
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
@@ -103,7 +105,7 @@ export default function FindUserForm({ onFind, onClose }) {
           <Col md={12}>
             <FormGroup>
               <Label for="key">
-                Valor
+                  {t.criteriaValue}
               </Label>
               <InputGroup size="sm">
                 <Input
@@ -120,7 +122,7 @@ export default function FindUserForm({ onFind, onClose }) {
                 >
                 </Input>              
                 <FormFeedback>
-                  Por favor teclee el valor del críterio para el filtro.
+                  {t.criteriaValueFeed}
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
@@ -129,10 +131,10 @@ export default function FindUserForm({ onFind, onClose }) {
       </ModalBody>
       <ModalFooter>
         <Button type="button" onClick={onClose} color="secondary">
-          <i className="bi bi-x-circle"></i> Cerrar
+          <i className="bi bi-x-circle"></i> {t.btnClose}
         </Button>
         <Button type="submit" color="primary">
-          <i className="bi bi-check2-circle"></i> Aceptar
+          <i className="bi bi-check2-circle"></i> {t.btnAccept}
         </Button>
       </ModalFooter>
     </Form>

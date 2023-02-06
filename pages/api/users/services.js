@@ -1,82 +1,89 @@
-import axios from 'axios';
-import { getToken, config } from '../../_common';
+import axios from "axios";
+import { config } from "../../_common";
 
 const getUsers = async (req, res) => {
-    const { page, per_page, criteria_key, criteria_value } = req.query;
-    let url = `${process.env.API_URL}users?page=${page}&per_page=${per_page}`;
-    if (criteria_key && criteria_value) {
-        url = url + `&criteria_key=${criteria_key}&criteria_value=${criteria_value}`;
+
+  const { page, per_page, criteria_key, criteria_value } = req.query;
+  let url = `${process.env.API_URL}users?page=${page}&per_page=${per_page}`;
+  if (criteria_key && criteria_value) {
+    url =
+      url + `&criteria_key=${criteria_key}&criteria_value=${criteria_value}`;
+  }
+  try {
+    const response = await axios.get(url, config);
+    if (response.status == 200) {
+      return res.status(200).json({
+        result: response.data,
+      });
     }
-    try {
-        const response = await axios.get(url, config);
-        if (response.status == 200) {
-            return res.status(200).json({
-                result: response.data
-            });
-        }
-    } catch (errors) {
-        return res.status(errors.response.status).json({ error: errors.response.statusText });
-    }
+  } catch (errors) {
+    return res
+      .status(errors.response.status)
+      .json({ error: errors.response.statusText });
+  }
 };
 
 const createUser = async (req, res) => {
-    const user = req.body;
-    const url = `${process.env.API_URL}users`;
-    try {
-        const response = await axios.post(url, user, config);   
-        if (response.status == 200) {
-            return res.status(200).json({
-                message: response.statusText
-            });
-        }
-    } catch (errors) {
-        return res.status(errors.response.status).json({ error: errors.response.statusText });
+  const user = req.body;
+  const url = `${process.env.API_URL}users`;
+  try {
+    const response = await axios.post(url, user, config);
+    if (response.status == 200) {
+      return res.status(200).json({
+        message: response.statusText,
+      });
     }
+  } catch (errors) {
+    return res
+      .status(errors.response.status)
+      .json({ error: errors.response.statusText });
+  }
 };
 
 const updateUser = async (req, res) => {
-    const { id } = req.query;
-    const user = req.body;
-    const url = `${process.env.API_URL}users/${id}`;
+  const { id } = req.query;
+  const user = req.body;
+  const url = `${process.env.API_URL}users/${id}`;
 
-    try {
-        const response = await axios.put(url, user, config);
-        if (response.status == 200) {
-            return res.status(200).json({
-                message: response.statusText
-            });
-        }
-    } catch (errors) {
-        return res.status(errors.response.status).json({ error: errors.response.statusText });
+  try {
+    const response = await axios.put(url, user, config);
+    if (response.status == 200) {
+      return res.status(200).json({
+        message: response.statusText,
+      });
     }
+  } catch (errors) {
+    return res
+      .status(errors.response.status)
+      .json({ error: errors.response.statusText });
+  }
 };
 
 const deleteUser = async (req, res) => {
-    const { id } = req.query;
-    const url = `${process.env.API_URL}users/${id}`;
-    try {
-        const response = await axios.delete(url, config);
-        if (response.status == 200) {
-            return res.status(200).json({
-                message: response.statusText
-            });
-        }
-    } catch (errors) {
-        return res.status(errors.response.status).json({ error: errors.response.statusText });
+  const { id } = req.query;
+  const url = `${process.env.API_URL}users/${id}`;
+  try {
+    const response = await axios.delete(url, config);
+    if (response.status == 200) {
+      return res.status(200).json({
+        message: response.statusText,
+      });
     }
+  } catch (errors) {
+    return res
+      .status(errors.response.status)
+      .json({ error: errors.response.statusText });
+  }
 };
 
 export default async function usermgr(req, res) {
-
-    const token = await getToken(req.cookies);
-    if (token) {
-        config.headers['authorization'] = `Bearer ${token}`;
-    }
+  if (req.headers["authorization"]) {
+    config.headers["Authorization"] = req.headers["authorization"];
 
     switch (req.method) {
       case "GET":
         // Nuestra lógica de código para el método GET...
-        return getUsers(req, res);      
+        return getUsers(req, res);
         break;
       case "POST":
         // Nuestra lógica de código para el método POST...
@@ -96,4 +103,9 @@ export default async function usermgr(req, res) {
         });
         break;
     }
-};
+  } else {
+    res.status(401).json({
+      mensaje: 'Esquema de Autentificación erróneo',
+    });
+  }
+}

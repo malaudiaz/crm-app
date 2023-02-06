@@ -1,39 +1,49 @@
-import Layout from "../components/Core/Layout";
-import PageTitle from "../components/Core/Pagetitle";
+import Layout from "../layouts/Layout";
 import Infocard from "../components/Dashboard/Infocard";
-import { getServerProps } from "./_common";
+import { useContext, useEffect } from "react";
+import AppContext from "../AppContext";
+import { getSession } from "next-auth/react";
 
-export default function Home({ user }) {
+export default function Home({ session }) {
+  const value = useContext(AppContext);
+  useEffect(() => {
+    value.setLanguageSelected(session.locale);
+  }, [session.locale, value]);
+
+  const t = value.state.languages.home;
+
   return (
-    <Layout user={user}>
-      <PageTitle title={"Panel Informativo"} />
+    <Layout user={session} title={t.title}>
       <section className="section dashboard">
         <div className="row">
           <div className="col-lg-8">
             <div className="row">
               <Infocard
                 name={"sales"}
-                title={"Ventas"}
+                title={t.sales}
                 clsIcon={"bi bi-cart"}
                 value={"145"}
                 percent={"12%"}
-                status={"Aumenta"}
+                moment={t.salesMoment}
+                status={t.salesStatus}
               />
               <Infocard
                 name={"revenue"}
-                title={"Ingresos"}
+                title={t.revenue}
                 clsIcon={"bi bi-currency-dollar"}
                 value={"$3,264"}
                 percent={"8%"}
-                status={"Aumenta"}
+                moment={t.revenueMoment}
+                status={t.revenueStatus}
               />
               <Infocard
                 name={"customers"}
-                title={"Clientes"}
+                title={t.partner}
                 clsIcon={"bi bi-people"}
                 value={"1244"}
                 percent={"12%"}
-                status={"Disminuye"}
+                moment={t.partnerMoment}
+                status={t.partnerStatus}
               />
             </div>
           </div>
@@ -117,6 +127,19 @@ export default function Home({ user }) {
   );
 }
 
-export async function getServerSideProps({ req, res }) {
-  return getServerProps(req, res);
-}
+export const getServerSideProps = async (context) => {
+  const session = await getSession(context);
+  if (!session)
+    return {
+      redirect: {
+        destination: "/users/login",
+        permanent: false,
+      },
+    };
+  return {
+    props: {
+      session,
+    },
+  };
+};
+

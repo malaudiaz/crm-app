@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
-import Layout from "../../components/Core/Layout";
-import PageTitle from "../../components/Core/Pagetitle";
+import { useState, useContext, useEffect, useRef } from "react";
+import Layout from "../../layouts/Layout";
+
 import DataTable from "../../components/Core/DataTable";
 import Pagination from "../../components/Core/Pagination";
 import ModalForm from "../../components/Core/ModalForm";
@@ -9,7 +9,9 @@ import EditPartnerForm from "../../components/Partner/EditPartner";
 import TableTool from "../../components/Core/TableTool";
 import FindPartnerForm from "../../components/Partner/FindPartner";
 import LoadingForm from "../../components/Core/Loading";
-import { getServerProps } from "../_common";
+
+import AppContext from "../../AppContext";
+import { getSession } from "next-auth/react";
 
 import axios from "axios";
 import Swal from 'sweetalert2'
@@ -22,7 +24,9 @@ const columns = [
   { id: 5, title: "Móvil", accessor: "mobile" },
 ];
 
-export default function List({ user, rowsPerPage }) {
+export default function List({ session, rowsPerPage }) {
+  const value = useContext(AppContext);
+
   const [loading, setLoading] = useState(false);
   const [records, setRecords] = useState([]);
   const [page, setPage] = useState(1);
@@ -37,11 +41,20 @@ export default function List({ user, rowsPerPage }) {
   const [openFind, setOpenFind] = useState(false);
   const [findMode, setFindMode] = useState(false);
 
-  // const rowsPerPage = 10;
-
   const mounted = useRef(false);
 
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "accept-Language": "es-ES,es;",
+      Authorization: `Bearer ${session.token}`,
+    },
+  };
+
   useEffect(() => {
+    value.setLanguageSelected(session.locale);
+
     const fetchData = async () => {
       const url = `/api/partners/services?page=${page}&per_page=${rowsPerPage}`;
       if (params != "") {
@@ -50,7 +63,7 @@ export default function List({ user, rowsPerPage }) {
       setLoading(true);
 
       try {
-        const { data } = await axios.get(url);
+        const { data } = await axios.get(url, config);
         setLoading(false);
 
         setTotal(data.result.total);
@@ -107,7 +120,7 @@ export default function List({ user, rowsPerPage }) {
     const url = "/api/partners/services";
     setLoading(true);
     try {
-      const res = await axios.post(url, partner);
+      const res = await axios.post(url, partner, config);
       if (res.status === 200) {
         setLoading(false);
 
@@ -137,7 +150,7 @@ export default function List({ user, rowsPerPage }) {
       setLoading(true);
       const url = `/api/partners/services?id=${row.id}`
       try {
-        await axios.put(url, partner);
+        await axios.put(url, partner, config);
         setLoading(false);
       } catch (errors) {
         setLoading(false);
@@ -169,7 +182,7 @@ export default function List({ user, rowsPerPage }) {
 
       const url = `/api/partners/services?id=${row.id}`
       await axios
-        .delete(url)
+        .delete(url, config)
         .then((res) => {
           Swal.fire({
             icon: 'success',
@@ -269,8 +282,7 @@ export default function List({ user, rowsPerPage }) {
   }
 
   return (
-    <Layout user={user}>
-      <PageTitle title={"Clientes"} except={"Clientes"} />
+    <Layout user={session} title={"Clientes"}>
       <div className="row">
         <div className="container">
           <div className="table-responsive">
@@ -342,6 +354,20 @@ export default function List({ user, rowsPerPage }) {
     </Layout>
   );
 }
-export async function getServerSideProps({ req, res }) {
-  return getServerProps(req, res);
-}
+
+export const getServerSideProps = async (context) => {
+  const session = await getSession(context);
+  if (!session)
+    return {
+      redirect: {
+        destination: "/users/login",
+        permanent: false,
+      },
+    };
+  return {
+    props: {
+      session,
+      rowsPerPage: process.env.ROW_PER_PAGE,
+    },
+  };
+};

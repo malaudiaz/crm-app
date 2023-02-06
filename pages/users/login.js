@@ -1,84 +1,100 @@
 import Image from "next/image";
-import { useEffect } from "react";
-import { useRouter } from "next/router";
-import { jwtVerify } from "jose";
+import { useContext } from "react";
+import { getSession } from "next-auth/react";
+import AppContext from "../../AppContext";
+import { Input, InputGroup } from "reactstrap";
+import Head from "next/head";
 
 import LoginForm from "../../components/Users/LoginForm";
 
-export default function Login({ authorized }) {
-  const router = useRouter();
+export default function Login({ session }) {
+  const value = useContext(AppContext);
+  let { languageSelected } = value.state;
+  const t = value.state.languages.login;
 
-  useEffect(() => {
-    if (authorized) {
-      router.push("/");
-    }
-  }, [authorized, router]);
+  const handleChange = (event) => {
+    value.setLanguageSelected(event.target.value);
+  };
 
   return (
-    <main>
-      <div className="container">
-        <section className="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
-          <div className="container">
-                      
-            <div className="row justify-content-center">
-              <div className="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
-                <div className="d-flex justify-content-center py-4">
-                  <a
-                    href="index.html"
-                    className="logo d-flex align-items-center w-auto"
-                  >
-                    <Image src="/logo.png" alt="" width="100%" height="100%" />
-                    <span
-                      className="d-none d-lg-block"
-                      style={{ paddingLeft: "10px" }}
-                    >
-                      Simple CRM
-                    </span>
-                  </a>
-                </div>
+    <>
+      <Head>
+        <link rel="shortcut icon" href="/domino.ico" />
+        <title>{t.pageTitle}</title>
+      </Head>
 
-                <div className="card mb-3">
-                  <div className="card-body">
-                    <div className="pt-4 pb-2">
-                      <h5 className="card-title text-center pb-0 fs-4">
-                        Autentificarse
-                      </h5>
-                      <p className="text-center small">
-                        Entre nombre de usuario y contraseña para autentificarse
-                      </p>
+      <div className="login-container min-vh-100">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-5 col-12 mx-auto">
+              <div className="text-center image-size-small position-relative">
+                <Image
+                  src="/profile/user-vector.jpg"
+                  alt=""
+                  width="100%"
+                  height="100%"
+                  className="rounded-circle p-2 bg-white"
+                />
+              </div>
+              <div className="p-5 bg-white rounded shadow-lg">
+                <h3 className="mb-2 text-center pt-5">{t.signIn}</h3>
+                <p className="text-center lead">{t.comment}</p>
+                <LoginForm />
+                <hr />
+                <div className="container">
+                  <div className="row">
+                    <div className="col">
+                      <InputGroup size="sm">
+                        <Input
+                          id="languaje"
+                          name="select"
+                          type="select"
+                          defaultValue={languageSelected}
+                          onClick={handleChange}
+                        >
+                          <option value="en">English</option>
+                          <option value="es">Español</option>
+                        </Input>
+                      </InputGroup>
                     </div>
-
-                    <LoginForm />
+                    <div className="col">
+                      <div className="row justify-content-end">
+                        <div className="lang">
+                          <a className="text-dark" href="#">
+                            {t.help}
+                          </a>
+                          <a className="text-dark" href="#">
+                            {t.privacy}
+                          </a>
+                          <a className="text-dark" href="#">
+                            {t.term}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-
-                <div className="credits">
-                  &copy; Copyright{" "}
-                  <strong>
-                    <span>Simple CRM</span>
-                  </strong>
-                  . All Rights Reserved
-
                 </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
       </div>
-    </main>
+    </>
   );
 }
-export async function getServerSideProps({ req, res }) {
-  const { crmToken } = req.cookies;
-  if (!crmToken) return { props: { authorized: false } };
 
-  try {
-    const { payload } = await jwtVerify(
-      crmToken,
-      new TextEncoder().encode(process.env.TOKEN_SECRET)
-    );
-    return { props: { authorized: true } };
-  } catch (error) {
-    return { props: { authorized: false } };
-  }
-}
+export const getServerSideProps = async (context) => {
+  const session = await getSession(context);
+  if (session)
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  return {
+    props: {
+      session,
+    },
+  };
+};

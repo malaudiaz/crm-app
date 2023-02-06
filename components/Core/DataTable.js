@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import AppContext from "../../AppContext";
 import { Table } from "reactstrap";
 
 export default function DataTable({
@@ -8,6 +10,9 @@ export default function DataTable({
   onEdit,
   onDelete,
 }) {
+  const ctx = useContext(AppContext);
+  const t = ctx.state.languages.datatable;
+
   return (
     <Table size="sm" striped id={tableId} hover responsive>
       <thead>
@@ -23,7 +28,7 @@ export default function DataTable({
               {title}
             </th>
           ))}
-          {onEdit || onDelete ? <th style={{textAlign: "center"}}>Acciones</th> : ""}
+          {onEdit || onDelete ? <th style={{textAlign: "center"}}>{t.actions}</th> : ""}
         </tr>
       </thead>
       <tbody>       
@@ -52,7 +57,7 @@ export default function DataTable({
                   <i
                     className="bi bi-pencil-fill"
                     data-toggle="tooltip"
-                    title="Editar"
+                    title={t.edit}
                   ></i>
                 </a>
                 <a
@@ -62,7 +67,7 @@ export default function DataTable({
                   <i
                     className="bi bi-trash-fill"
                     data-toggle="tooltip"
-                    title="Eliminar"
+                    title={t.delete}
                   ></i>
                 </a>
               </td>
@@ -70,7 +75,7 @@ export default function DataTable({
               ""
             )}
           </tr>
-        )) : <tr><td style={{textAlign: "center"}} colSpan={columns.length + 2}><b>No existen datos para Mostrar</b></td></tr>}
+        )) : <tr><td style={{textAlign: "center"}} colSpan={columns.length + 2}><b>{t.empty}</b></td></tr>}
       </tbody>
     </Table>
   );
