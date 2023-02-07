@@ -23,7 +23,7 @@ const columns = [
   { id: 2, title: "DNI", accessor: "dni" },
 ];
 
-export default function FinderContact({ id, changeContact, contract }) {
+export default function FinderContact({ session, id, changeContact, contract }) {
   const [loading, setLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const [records, setRecords] = useState([]);
@@ -35,11 +35,20 @@ export default function FinderContact({ id, changeContact, contract }) {
   const [totalPages, setTotalPages] = useState(0);
   const rowsPerPage = 10;
 
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "accept-Language": "es-ES,es;",
+      "Authorization": `Bearer ${session.token}`,
+    },
+  };    
+
   const fetchData = async () => {
     const url = `/api/contacts/services?page=${page}&per_page=${rowsPerPage}&partner_id=${contract.id_partner}`;
     setLoading(true);
     try {
-      const { data } = await axios.get(url);
+      const { data } = await axios.get(url, config);
       setLoading(false);
 
       setTotal(data.result.total);

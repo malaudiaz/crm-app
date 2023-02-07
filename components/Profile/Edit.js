@@ -100,12 +100,13 @@ export default function EditProfile({ profile, setProfile }) {
               Foto del Pérfil
             </Label>
             <Col sm={9}>
+              { profile.photo &&
               <Image
                 src={createObjectURL ? createObjectURL : profile.photo}
                 alt="Perfil"
                 width="100%"
                 height="100%"
-              />
+              />}
               <div style={{ paddingLeft: "15px" }}>
                 <Label
                   href="#"

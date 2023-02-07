@@ -27,7 +27,7 @@ const columns = [
   { id: 2, title: "NIT", accessor: "nit" },
 ];
 
-export default function FinderPartner({ id, changePartner, contract }) {
+export default function FinderPartner({ session, id, changePartner, contract }) {
   const [loading, setLoading] = useState(false);
   const [records, setRecords] = useState([]);
   const [record, setRecord] = useState(null);
@@ -48,6 +48,15 @@ export default function FinderPartner({ id, changePartner, contract }) {
 
   const rowsPerPage = 10;
 
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "accept-Language": "es-ES,es;",
+      "Authorization": `Bearer ${session.token}`,
+    },
+  };    
+
   useEffect(() => {
     if (contract.id_partner !== "") {
       setPartner(contract.name_partner);
@@ -62,7 +71,7 @@ export default function FinderPartner({ id, changePartner, contract }) {
     setLoading(true);
 
     try {
-      const { data } = await axios.get(url);
+      const { data } = await axios.get(url, config);
 
       setLoading(false);
 

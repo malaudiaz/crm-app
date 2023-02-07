@@ -36,9 +36,9 @@ export default function Profile( { session } ) {
   const config = {
     headers: {
       "Content-Type": "application/json",
-      Accept: "application/json",
+      "Accept": "application/json",
       "accept-Language": "es-ES,es;",
-      Authorization: `Bearer ${session.token}`,
+      "Authorization": `Bearer ${session.token}`,
     },
   };  
 
@@ -70,6 +70,8 @@ export default function Profile( { session } ) {
       try {
         const {data} = await axios.get(url, config);
         const tmp = data.result.data;
+
+        console.log(tmp);
       
         profile.id = tmp.id;
         profile.username = tmp.username;
@@ -78,7 +80,7 @@ export default function Profile( { session } ) {
         profile.job = tmp.job;
         profile.email = tmp.email;
         profile.phone = tmp.phone;
-        profile.photo = "/profile/"+tmp.id+".jpg";
+        profile.photo = data.result.photo;
 
         setProfile(profile);
 

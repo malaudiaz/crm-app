@@ -1,6 +1,13 @@
 import axios from "axios";
-import { config } from "../../_common";
 import fs from "fs";
+
+const config = {
+  headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "accept-Language": "es-ES,es;"
+  }
+}
 
 const getProfile = async (req, res) => {
   const { id } = req.query;
@@ -11,12 +18,18 @@ const getProfile = async (req, res) => {
 
     if (response.status == 200) {
       const user = response.data;
-      const userImage = `./public/profile/${user.id}.jpg`;
+      const userImage = `./public/profile/${id}.jpg`;
+
+      console.log(userImage);
 
       const fileExists = fs.existsSync(userImage);
+
+      console.log(fileExists);
+
       if (fileExists) {
         // if (fs.existsSync(userImage)) fs.unlinkSync(userImage)
-        user.photo = `/profile/${user.id}.jpg`;
+        user.photo = `/profile/${id}.jpg`;
+
       } else {
         user.photo = "/profile/empty.png";
       }

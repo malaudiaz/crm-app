@@ -1,24 +1,38 @@
 import { useState, useEffect, useRef } from "react";
 import { InputGroup, Input, FormFeedback } from "reactstrap";
 import axios from "axios";
+import Swal from 'sweetalert2'
 
-export default function ContractStatus({id, handleChange, validForm, valDefault}) {
+export default function ContractStatus({session, id, handleChange, validForm, valDefault}) {
   const mounted = useRef(false);
   const [records, setRecords] = useState([]);
+
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "accept-Language": "es-ES,es;",
+      "Authorization": `Bearer ${session.token}`,
+    },
+  };    
 
   useEffect(() => {
     const fetchData = async () => {
       const url = `/api/contracts/status`;
       // setLoading(true);
       try {
-        const { data } = await axios.get(url);
+        const { data } = await axios.get(url, config);
         // setLoading(false);
         setRecords(data.result);
 
       } catch (error) {
-        console.log(error);
         // setLoading(false);
-        swal("Error", "Ha ocurrido un error al consultar el API", "error");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al consultar la API',
+          showConfirmButton: true,
+        });          
       }
     };
 

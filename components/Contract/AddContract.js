@@ -18,7 +18,8 @@ import FinderPartner from "../Partner/FinderPartner";
 import SignUser from "../Users/SignUsers";
 import ContractStatus from "./ContractStatus";
 
-export default function AddContractForm({ onAdd, onClose }) {
+export default function AddContractForm({ session, onAdd, onClose }) {
+
   const [contract, setContract] = useState({
     id: "",
     number: "",
@@ -156,6 +157,7 @@ export default function AddContractForm({ onAdd, onClose }) {
           <FormGroup>
             <Label for="id_partner">Cliente</Label>
             <FinderPartner
+              session={session}
               id={"id_partner"}
               changePartner={setPartner}
               contract={contract}
@@ -166,6 +168,7 @@ export default function AddContractForm({ onAdd, onClose }) {
           <FormGroup>
             <Label for="id_contact">Contácto</Label>
             <FinderContact
+              session={session}
               id={"id_contact"}
               changeContact={setContact}
               partner_id={contract.id_partner}
@@ -206,6 +209,7 @@ export default function AddContractForm({ onAdd, onClose }) {
           <FormGroup>
             <Label for="sign_by">Firmado por</Label>
             <SignUser
+              session={session}
               id={"sign_by"}
               handleChange={handleChange}
               validForm={validForm}
@@ -235,6 +239,7 @@ export default function AddContractForm({ onAdd, onClose }) {
           <FormGroup>
             <Label for="status_name">Estado</Label>
             <ContractStatus
+              session={session}
               id={"status_name"}
               handleChange={handleChange}
               validForm={validForm}

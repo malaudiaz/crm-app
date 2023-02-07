@@ -52,9 +52,9 @@ export default function List({ session, rowsPerPage }) {
   const config = {
     headers: {
       "Content-Type": "application/json",
-      Accept: "application/json",
+      "Accept": "application/json",
       "accept-Language": "es-ES,es;",
-      Authorization: `Bearer ${session.token}`,
+      "Authorization": `Bearer ${session.token}`,
     },
   };
 
@@ -331,7 +331,7 @@ export default function List({ session, rowsPerPage }) {
         id={"addContractForm"}
         open={openAdd}
       >
-        <AddContractForm onAdd={addContract} onClose={closeAddContract} />
+        <AddContractForm session={session} onAdd={addContract} onClose={closeAddContract} />
       </ModalForm>
 
       <ModalForm

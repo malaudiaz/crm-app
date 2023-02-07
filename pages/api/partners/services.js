@@ -1,5 +1,11 @@
 import axios from "axios";
-import { config } from "../../_common";
+const config = {
+  headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "accept-Language": "es-ES,es;"
+  }
+}
 
 const getPartner = async (req, res) => {
   const { page, per_page, criteria_key, criteria_value } = req.query;
