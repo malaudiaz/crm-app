@@ -14,6 +14,7 @@ import { getSession } from "next-auth/react";
 
 import axios from "axios";
 import Swal from "sweetalert2";
+import fs from "fs";
 
 import LoadingForm from "../../components/Core/Loading";
 
@@ -98,7 +99,7 @@ export default function List({ session, rowsPerPage }) {
     { id: 4, title: t.job, accessor: "job" },
     { id: 5, title: t.email, accessor: "email" },
     { id: 6, title: t.phone, accessor: "phone" },
-  ]; 
+  ];
 
   const onChangePage = (pageNumber) => {
     setPage(pageNumber);
@@ -355,6 +356,15 @@ export const getServerSideProps = async (context) => {
         permanent: false,
       },
     };
+
+  const userImage = `./public/profile/${session.id}.jpg`;
+  const fileExists = fs.existsSync(userImage);
+  if (fileExists) {
+    session["avatar"] = `/profile/${session.id}.jpg`;
+  } else {
+    session["avatar"] = "/profile/empty.jpg";
+  }
+
   return {
     props: {
       session,

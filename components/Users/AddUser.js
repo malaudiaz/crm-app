@@ -13,6 +13,7 @@ import {
   Col,
   InputGroup,
   Button,
+  FormText
 } from "reactstrap";
 
 export default function AddUserForm({ onAdd, onClose }) {
@@ -104,7 +105,7 @@ export default function AddUserForm({ onAdd, onClose }) {
                     handleChange(e);
                   }}
                   onKeyPress={(event) => {
-                    if (!/^[a-z_.\s]*$/.test(event.key)) {
+                    if (!/^[a-zñ_.\s]*$/.test(event.key)) {
                       event.preventDefault();
                     }
                   }}
@@ -161,7 +162,7 @@ export default function AddUserForm({ onAdd, onClose }) {
                   handleChange(e);
                 }}
                 onKeyPress={(event) => {
-                  if (!/^[a-zA-Z\s]*$/.test(event.key)) {
+                  if (!/^[a-zA-ZñÑáéíóú\s]*$/.test(event.key)) {
                     event.preventDefault();
                   }
                 }}
@@ -187,7 +188,7 @@ export default function AddUserForm({ onAdd, onClose }) {
                   handleChange(e);
                 }}
                 onKeyPress={(event) => {
-                  if (!/^[a-zA-Z\s]*$/.test(event.key)) {
+                  if (!/^[a-zA-ZñÑáéíóú\s]*$/.test(event.key)) {
                     event.preventDefault();
                   }
                 }}
@@ -222,6 +223,9 @@ export default function AddUserForm({ onAdd, onClose }) {
                 {t.emailFeed}
               </FormFeedback>
             </InputGroup>
+            <FormText>
+              {t.capsLock}
+            </FormText>              
           </FormGroup>
         </Col>
 

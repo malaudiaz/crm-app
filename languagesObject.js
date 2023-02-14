@@ -84,7 +84,7 @@ let languagesObject = {
       tableTitle: "List of",
       filterOn: "Filter",
       filterOff: "Remove Filter",
-      btnNew: "New"
+      btnNew: "New",
     },
     userform: {
       newTitle: "New User",
@@ -98,6 +98,7 @@ let languagesObject = {
       job: "Job",
       email: "Email",
       emailFeed: "Please enter the user's email.",
+      capsLock: "Disable Caps Lock",
       phone: "Phone",
       password: "Password",
       passwordFeed: "Please type a valid password.",
@@ -205,7 +206,7 @@ let languagesObject = {
       tableTitle: "Listado de",
       filterOn: "Filtrar",
       filterOff: "Quitar Filtro",
-      btnNew: "Nuevo"
+      btnNew: "Nuevo",
     },
     userform: {
       newTitle: "Nuevo Usuario",
@@ -219,6 +220,7 @@ let languagesObject = {
       job: "Cargo",
       email: "Correo",
       emailFeed: "Por favor entre el correo del usuario.",
+      capsLock: "Desactive el Bloque de Mayúsculas",
       phone: "Teléfono",
       password: "Contraseña",
       passwordFeed: "Por favor teclee una contraseña valida.",

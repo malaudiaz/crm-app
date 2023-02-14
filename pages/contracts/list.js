@@ -1,4 +1,3 @@
-
 import { useState, useContext, useEffect, useRef } from "react";
 import Layout from "../../layouts/Layout";
 
@@ -15,7 +14,8 @@ import AppContext from "../../AppContext";
 import { getSession } from "next-auth/react";
 
 import axios from "axios";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
+import fs from "fs";
 
 import LoadingForm from "../../components/Core/Loading";
 
@@ -23,11 +23,11 @@ const columns = [
   { id: 1, title: "Número", accessor: "number" },
   { id: 2, title: "Cliente", accessor: "partner" },
   { id: 3, title: "Contacto", accessor: "contact" },
-  { id: 4, title: "Monto Contratado", accessor: "initial_aproved_import"},
+  { id: 4, title: "Monto Contratado", accessor: "initial_aproved_import" },
   { id: 5, title: "Monto Disponible", accessor: "real_import" },
   { id: 6, title: "Estado", accessor: "status_description" },
   { id: 7, title: "Firmado por", accessor: "sign_full_name" },
-  { id: 8, title: "Fecha de Firma", accessor: "sign_date"}
+  { id: 8, title: "Fecha de Firma", accessor: "sign_date" },
 ];
 
 export default function List({ session, rowsPerPage }) {
@@ -52,9 +52,9 @@ export default function List({ session, rowsPerPage }) {
   const config = {
     headers: {
       "Content-Type": "application/json",
-      "Accept": "application/json",
+      Accept: "application/json",
       "accept-Language": "es-ES,es;",
-      "Authorization": `Bearer ${session.token}`,
+      Authorization: `Bearer ${session.token}`,
     },
   };
 
@@ -62,29 +62,29 @@ export default function List({ session, rowsPerPage }) {
     value.setLanguageSelected(session.locale);
 
     const fetchData = async () => {
-      const url = `/api/contracts/services?page=${page}&per_page=${rowsPerPage}`
+      const url = `/api/contracts/services?page=${page}&per_page=${rowsPerPage}`;
       if (params != "") {
         url = url + params;
       }
       setLoading(true);
 
       try {
-        const {data} = await axios.get(url, config);
+        const { data } = await axios.get(url, config);
         setLoading(false);
 
         setTotal(data.result.total);
         setTotalPages(data.result.total_pages);
         setRecords(data.result.data);
-        
+
         setReload(false);
       } catch (error) {
         setLoading(false);
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ha ocurrido un error al consultar la API',
+          icon: "error",
+          title: "Error",
+          text: "Ha ocurrido un error al consultar la API",
           showConfirmButton: true,
-        });              
+        });
       }
     };
 
@@ -123,33 +123,32 @@ export default function List({ session, rowsPerPage }) {
 
   const addContract = async (contract) => {
     setLoading(true);
-    const url = "/api/contracts/services"
+    const url = "/api/contracts/services";
 
     try {
       const res = await axios.post(url, contract, config);
       if (res.status === 200) {
         setLoading(false);
         Swal.fire({
-          icon: 'success',
-          title: 'Operación Exitosa',
-          text: 'El contrato se ha creado con éxito',
+          icon: "success",
+          title: "Operación Exitosa",
+          text: "El contrato se ha creado con éxito",
           showConfirmButton: true,
-        });              
+        });
         setOpenAdd(false);
         setReload(true);
       }
     } catch (errors) {
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Ha ocurrido un error al consultar la API',
+        icon: "error",
+        title: "Error",
+        text: "Ha ocurrido un error al consultar la API",
         showConfirmButton: true,
-      });              
+      });
     }
   };
 
   const editContract = async (contract) => {
-
     if (selectedList.length > 0) {
       const row = selectedList[0];
 
@@ -161,26 +160,25 @@ export default function List({ session, rowsPerPage }) {
         .put(url, contract, config)
         .then((res) => {
           Swal.fire({
-            icon: 'success',
-            title: 'Operación Exitosa',
-            text: 'Contrato modificado con éxito',
+            icon: "success",
+            title: "Operación Exitosa",
+            text: "Contrato modificado con éxito",
             showConfirmButton: true,
-          });                     
+          });
           setLoading(false);
           setOpenEdit(false);
         })
         .catch((errors) => {
-          setLoading(false);        
+          setLoading(false);
           Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ha ocurrido un error al consultar la API',
+            icon: "error",
+            title: "Error",
+            text: "Ha ocurrido un error al consultar la API",
             showConfirmButton: true,
-          });           
-            
+          });
         });
 
-        setReload(true);
+      setReload(true);
     }
   };
 
@@ -192,31 +190,30 @@ export default function List({ session, rowsPerPage }) {
 
       setLoading(true);
 
-      const url = `/api/contracts/services?id=${row.id}`
+      const url = `/api/contracts/services?id=${row.id}`;
       await axios
         .delete(url, config)
         .then((res) => {
           Swal.fire({
-            icon: 'success',
-            title: 'Operación Exitosa',
-            text: 'Contrato eliminado con éxito',
+            icon: "success",
+            title: "Operación Exitosa",
+            text: "Contrato eliminado con éxito",
             showConfirmButton: true,
-          });                     
+          });
           setLoading(false);
         })
         .catch((errors) => {
           setLoading(false);
-          
+
           Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ha ocurrido un error al consultar la API',
+            icon: "error",
+            title: "Error",
+            text: "Ha ocurrido un error al consultar la API",
             showConfirmButton: true,
-          });           
-            
+          });
         });
 
-        setReload(true);
+      setReload(true);
     }
   };
 
@@ -239,57 +236,57 @@ export default function List({ session, rowsPerPage }) {
   const openAddContract = (e) => {
     e.preventDefault;
     setOpenAdd(true);
-  }
+  };
 
   const openEditContract = (e) => {
     e.preventDefault;
     setOpenEdit(true);
-  }
+  };
 
   const openFindContract = (e) => {
     e.preventDefault;
     setOpenFind(true);
-  }
+  };
 
   const openDelContract = (e) => {
     e.preventDefault;
 
     Swal.fire({
-      title: '¿ Estás seguro ?',
+      title: "¿ Estás seguro ?",
       text: "! Esta opción no podrá ser revertida !",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Sí',
-      cancelButtonText: 'No',
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',      
+      confirmButtonText: "Sí",
+      cancelButtonText: "No",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
       reverseButtons: true,
-      allowOutsideClick: false
+      allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
         delContract(e);
-      }     
-    })
-  }
+      }
+    });
+  };
 
   const closeAddContract = () => {
     setOpenAdd(false);
-  }
+  };
 
   const closeEditContract = () => {
     setOpenEdit(false);
-  }
+  };
 
   const closeDelContract = () => {
     setOpenDelete(false);
-  }
+  };
 
   const closeFindContract = () => {
     setParams("");
     setOpenFind(false);
     setFindMode(false);
     setReload(true);
-  }
+  };
 
   return (
     <Layout user={session} title={"Contratos"}>
@@ -297,56 +294,56 @@ export default function List({ session, rowsPerPage }) {
         <div className="container">
           <div className="table-responsive">
             <div className="table-wrapper">
-                <div className="table-title">
-                  <TableTool
-                    title={"Contratos"}
-                    openForm={openAddContract}
-                    openFind={openFindContract}
-                    closFind={closeFindContract}
-                    isFindMode={findMode}
-                  />
-                </div>                
-                <DataTable
-                  tableId={"contracts"}
-                  records={records}
-                  columns={columns}
-                  onItemCheck={onItemCheck}
-                  onEdit={openEditContract}
-                  onDelete={openDelContract}
+              <div className="table-title">
+                <TableTool
+                  title={"Contratos"}
+                  openForm={openAddContract}
+                  openFind={openFindContract}
+                  closFind={closeFindContract}
+                  isFindMode={findMode}
                 />
+              </div>
+              <DataTable
+                tableId={"contracts"}
+                records={records}
+                columns={columns}
+                onItemCheck={onItemCheck}
+                onEdit={openEditContract}
+                onDelete={openDelContract}
+              />
 
-                <Pagination
-                  onChangePage={onChangePage}
-                  currentPage={page}
-                  totalPage={totalPages}
-                  totalCount={total}
-                  rowsPerPage={rowsPerPage}
-                />
+              <Pagination
+                onChangePage={onChangePage}
+                currentPage={page}
+                totalPage={totalPages}
+                totalCount={total}
+                rowsPerPage={rowsPerPage}
+              />
             </div>
           </div>
         </div>
       </div>
 
-      <ModalForm
-        id={"addContractForm"}
-        open={openAdd}
-      >
-        <AddContractForm session={session} onAdd={addContract} onClose={closeAddContract} />
+      <ModalForm id={"addContractForm"} open={openAdd}>
+        <AddContractForm
+          session={session}
+          onAdd={addContract}
+          onClose={closeAddContract}
+        />
       </ModalForm>
 
-      <ModalForm
-        id={"editContractForm"}
-        open={openEdit}
-      >
-        <EditContractForm record={selectedList} onEdit={editContract} onClose={closeEditContract} />
+      <ModalForm id={"editContractForm"} open={openEdit}>
+        <EditContractForm
+          session={session}
+          record={selectedList}
+          onEdit={editContract}
+          onClose={closeEditContract}
+        />
       </ModalForm>
 
-      <ModalForm
-        id={"findContractForm"}
-        open={openFind}
-      >
+      <ModalForm id={"findContractForm"} open={openFind}>
         <FindContractForm
-          onFind={findContract} 
+          onFind={findContract}
           isFindMode={findMode}
           onClose={closeFindContract}
         />
@@ -355,10 +352,9 @@ export default function List({ session, rowsPerPage }) {
       <LoadingForm
         id={"loading"}
         open={loading}
-        size='sm'
+        size="sm"
         waitMsg={"Por favor, espere"}
       />
-
     </Layout>
   );
 }
@@ -372,6 +368,15 @@ export const getServerSideProps = async (context) => {
         permanent: false,
       },
     };
+
+  const userImage = `./public/profile/${session.id}.jpg`;
+  const fileExists = fs.existsSync(userImage);
+  if (fileExists) {
+    session["avatar"] = `/profile/${session.id}.jpg`;
+  } else {
+    session["avatar"] = "/profile/empty.jpg";
+  }
+
   return {
     props: {
       session,

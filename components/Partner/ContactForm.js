@@ -8,7 +8,7 @@ import Swal from 'sweetalert2'
 
 const columns = [{ id: 1, title: "Nombre", accessor: "name" }];
 
-export default function ContactForm({ setContacts, partner_id }) {
+export default function ContactForm({ session, setContacts, partner_id }) {
   const [loading, setLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
@@ -21,12 +21,21 @@ export default function ContactForm({ setContacts, partner_id }) {
   const mounted = useRef(false);
   const rowsPerPage = 10;
 
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "accept-Language": "es-ES,es;",
+      Authorization: `Bearer ${session.token}`,
+    },
+  };  
+
   useEffect(() => {
     const fetchData = async () => {
       const url = `/api/contacts/services?page=${page}&per_page=${rowsPerPage}&partner_id=${partner_id}`;
       setLoading(true);
       try {
-        const { data } = await axios.get(url);
+        const { data } = await axios.get(url, config);
         setLoading(false);
 
         setTotal(data.result.total);

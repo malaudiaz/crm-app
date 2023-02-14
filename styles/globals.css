@@ -80,7 +80,7 @@
     margin-top: 60px;
     padding: 20px 30px;
     transition: all 0.3s;
-    min-height:80vh    
+    min-height:85vh;    
   }
   
   @media (max-width: 1199px) {

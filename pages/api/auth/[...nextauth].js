@@ -26,6 +26,12 @@ export default NextAuth({
         const response = await axios.post(url, {
           username: credentials.username,
           password: credentials.password,
+        }, {
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "accept-Language": credentials.locale
+          }
         });
 
         if (response.status == 200) {

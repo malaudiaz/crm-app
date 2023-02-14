@@ -9,14 +9,14 @@ import {
   Nav,
   NavItem,
   NavLink,
-  Button
+  Button,
 } from "reactstrap";
 
 import classnames from "classnames";
 import PartnerForm from "./PartnerForm";
 import ContactForm from "./ContactForm";
 
-export default function AddPartnerForm({ onAdd, onClose }) {
+export default function AddPartnerForm({ session, onAdd, onClose }) {
   const [partner, setPartner] = useState({
     id: "",
     type: "",
@@ -27,18 +27,18 @@ export default function AddPartnerForm({ onAdd, onClose }) {
     phone: "",
     mobile: "",
     nit: "",
-    contacts: []
+    contacts: [],
   });
 
   const [validate, setValidate] = useState({
     type: "",
     name: "",
     address: "",
-    phone: ""
+    phone: "",
   });
 
   const [activeTab, setActiveTab] = useState("1");
- 
+
   const toggleTab = (tab) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
@@ -75,8 +75,7 @@ export default function AddPartnerForm({ onAdd, onClose }) {
       type: partner.type != "" ? "success" : "error",
       name: partner.name != "" ? "success" : "error",
       address: partner.address != "" ? "success" : "error",
-      phone: partner.phone != "" ? "success" : "error"
-
+      phone: partner.phone != "" ? "success" : "error",
     });
 
     if (
@@ -90,9 +89,9 @@ export default function AddPartnerForm({ onAdd, onClose }) {
   };
 
   const setContacts = (contacts) => {
-    partner.contacts = contacts
+    partner.contacts = contacts;
     setPartner(partner);
-  }
+  };
 
   return (
     <Form className="form" onSubmit={handleSubmit}>
@@ -102,7 +101,7 @@ export default function AddPartnerForm({ onAdd, onClose }) {
           <NavItem>
             <NavLink
               href="#"
-              className={classnames({ active: activeTab === "1"})}
+              className={classnames({ active: activeTab === "1" })}
               onClick={() => {
                 toggleTab("1");
               }}
@@ -132,7 +131,12 @@ export default function AddPartnerForm({ onAdd, onClose }) {
             />
           </TabPane>
           <TabPane tabId="2">
-              <ContactForm setContacts={setContacts} partner_id={partner.id} onClose={onClose}/>
+            <ContactForm
+              session={session}
+              setContacts={setContacts}
+              partner_id={partner.id}
+              onClose={onClose}
+            />
           </TabPane>
         </TabContent>
       </ModalBody>

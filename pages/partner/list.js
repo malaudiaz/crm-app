@@ -14,7 +14,8 @@ import AppContext from "../../AppContext";
 import { getSession } from "next-auth/react";
 
 import axios from "axios";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
+import fs from "fs";
 
 const columns = [
   { id: 1, title: "Tipo", accessor: "type" },
@@ -75,11 +76,11 @@ export default function List({ session, rowsPerPage }) {
         setLoading(false);
 
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ha ocurrido un error al consultar la API',
+          icon: "error",
+          title: "Error",
+          text: "Ha ocurrido un error al consultar la API",
           showConfirmButton: true,
-        });        
+        });
       }
     };
 
@@ -125,21 +126,21 @@ export default function List({ session, rowsPerPage }) {
         setLoading(false);
 
         Swal.fire({
-          icon: 'success',
-          title: 'Operación Exitosa',
-          text: 'El cliente se ha creado con éxito',
+          icon: "success",
+          title: "Operación Exitosa",
+          text: "El cliente se ha creado con éxito",
           showConfirmButton: true,
-        })                
+        });
         setReload(true);
-        setOpenAdd(false);        
+        setOpenAdd(false);
       }
     } catch (errors) {
       setLoading(false);
-     
+
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Ha ocurrido un error al consultar la API',
+        icon: "error",
+        title: "Error",
+        text: "Ha ocurrido un error al consultar la API",
         showConfirmButton: true,
       });
     }
@@ -148,27 +149,27 @@ export default function List({ session, rowsPerPage }) {
   const editPartner = async (partner) => {
     selectedList.map(async (row) => {
       setLoading(true);
-      const url = `/api/partners/services?id=${row.id}`
+      const url = `/api/partners/services?id=${row.id}`;
       try {
         await axios.put(url, partner, config);
         setLoading(false);
       } catch (errors) {
         setLoading(false);
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ha ocurrido un error al consultar la API',
+          icon: "error",
+          title: "Error",
+          text: "Ha ocurrido un error al consultar la API",
           showConfirmButton: true,
         });
       }
       Swal.fire({
-        icon: 'success',
-        title: 'Operación Exitosa',
-        text: 'Cambios guardados con éxito',
+        icon: "success",
+        title: "Operación Exitosa",
+        text: "Cambios guardados con éxito",
         showConfirmButton: true,
-      });           
+      });
       setReload(true);
-      setOpenEdit(false);        
+      setOpenEdit(false);
     });
   };
 
@@ -180,31 +181,30 @@ export default function List({ session, rowsPerPage }) {
 
       setLoading(true);
 
-      const url = `/api/partners/services?id=${row.id}`
+      const url = `/api/partners/services?id=${row.id}`;
       await axios
         .delete(url, config)
         .then((res) => {
           Swal.fire({
-            icon: 'success',
-            title: 'Operación Exitosa',
-            text: 'Cliente eliminado con éxito',
+            icon: "success",
+            title: "Operación Exitosa",
+            text: "Cliente eliminado con éxito",
             showConfirmButton: true,
-          });                     
+          });
           setLoading(false);
         })
         .catch((errors) => {
           setLoading(false);
-          
+
           Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ha ocurrido un error al consultar la API',
+            icon: "error",
+            title: "Error",
+            text: "Ha ocurrido un error al consultar la API",
             showConfirmButton: true,
-          });           
-            
+          });
         });
 
-        setReload(true);
+      setReload(true);
     }
   };
 
@@ -223,63 +223,62 @@ export default function List({ session, rowsPerPage }) {
 
     setOpenFind(!openFind);
     setReload(true);
-  };  
+  };
 
   const openAddPartner = (e) => {
     e.preventDefault;
     setOpenAdd(true);
-  }
+  };
 
   const openEditPartner = (e) => {
     e.preventDefault;
     setOpenEdit(true);
-  }
+  };
 
   const openFindPartner = (e) => {
     e.preventDefault;
     setOpenFind(true);
-  }
+  };
 
   const openDelPartner = (e) => {
     e.preventDefault;
 
     Swal.fire({
-      title: '¿ Estás seguro ?',
+      title: "¿ Estás seguro ?",
       text: "! Esta opción no podrá ser revertida !",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Sí',
-      cancelButtonText: 'No',
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',      
+      confirmButtonText: "Sí",
+      cancelButtonText: "No",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
       reverseButtons: true,
-      allowOutsideClick: false
+      allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
         delPartner(e);
-      }     
-    })
-
-  }
+      }
+    });
+  };
 
   const closeAddPartner = () => {
     setOpenAdd(false);
-  }
+  };
 
   const closeEditPartner = () => {
     setOpenEdit(false);
-  }
+  };
 
   const closeDelPartner = () => {
     setOpenDelete(false);
-  }
+  };
 
   const closeFindPartner = () => {
     setParams("");
     setOpenFind(false);
     setFindMode(false);
     setReload(true);
-  }
+  };
 
   return (
     <Layout user={session} title={"Clientes"}>
@@ -287,70 +286,64 @@ export default function List({ session, rowsPerPage }) {
         <div className="container">
           <div className="table-responsive">
             <div className="table-wrapper">
-
-                <div className="table-title">
-                  <TableTool
-                    title={"Clientes"}
-                    openForm={openAddPartner}
-                    openFind={openFindPartner}
-                    closFind={closeFindPartner}
-                    isFindMode={findMode}
-                    loading={loading}
-                  />
-                </div>
-                <DataTable
-                  tableId={"partners"}
-                  records={records}
-                  columns={columns}
-                  onItemCheck={onItemCheck}
-                  onEdit={openEditPartner}
-                  onDelete={openDelPartner}
+              <div className="table-title">
+                <TableTool
+                  title={"Clientes"}
+                  openForm={openAddPartner}
+                  openFind={openFindPartner}
+                  closFind={closeFindPartner}
+                  isFindMode={findMode}
+                  loading={loading}
                 />
+              </div>
+              <DataTable
+                tableId={"partners"}
+                records={records}
+                columns={columns}
+                onItemCheck={onItemCheck}
+                onEdit={openEditPartner}
+                onDelete={openDelPartner}
+              />
 
-                <Pagination
-                  onChangePage={onChangePage}
-                  currentPage={page}
-                  totalPage={totalPages}
-                  totalCount={total}
-                  rowsPerPage={rowsPerPage}
-                />
+              <Pagination
+                onChangePage={onChangePage}
+                currentPage={page}
+                totalPage={totalPages}
+                totalCount={total}
+                rowsPerPage={rowsPerPage}
+              />
             </div>
           </div>
         </div>
       </div>
 
-      <ModalForm
-        id={"addPartnerForm"}
-        open={openAdd}
-      >
-        <AddParnetForm onAdd={addPartner} onClose={closeAddPartner} />
-      </ModalForm>      
-
-      <ModalForm
-        id={"editPartnerForm"}
-        open={openEdit}
-      >
-        <EditPartnerForm record={selectedList} onEdit={editPartner} onClose={closeEditPartner} />
+      <ModalForm id={"addPartnerForm"} open={openAdd}>
+        <AddParnetForm session={session} onAdd={addPartner} onClose={closeAddPartner} />
       </ModalForm>
 
-      <ModalForm
-        id={"findPartnerForm"}
-        open={openFind}
-      >
+      <ModalForm id={"editPartnerForm"} open={openEdit}>
+        <EditPartnerForm
+          session={session}
+          record={selectedList}
+          onEdit={editPartner}
+          onClose={closeEditPartner}
+        />
+      </ModalForm>
+
+      <ModalForm id={"findPartnerForm"} open={openFind}>
         <FindPartnerForm
-          onFind={findPartner} 
+          onFind={findPartner}
           isFindMode={findMode}
           onClose={closeFindPartner}
         />
-      </ModalForm>      
+      </ModalForm>
 
       <LoadingForm
         id={"loading"}
         open={loading}
-        size='sm'
+        size="sm"
         waitMsg={"Por favor, espere"}
       />
-
     </Layout>
   );
 }
@@ -364,6 +357,15 @@ export const getServerSideProps = async (context) => {
         permanent: false,
       },
     };
+
+  const userImage = `./public/profile/${session.id}.jpg`;
+  const fileExists = fs.existsSync(userImage);
+  if (fileExists) {
+    session["avatar"] = `/profile/${session.id}.jpg`;
+  } else {
+    session["avatar"] = "/profile/empty.jpg";
+  }
+
   return {
     props: {
       session,

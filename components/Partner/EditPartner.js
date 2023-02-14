@@ -16,7 +16,7 @@ import classnames from "classnames";
 import PartnerForm from "./PartnerForm";
 import ContactForm from "./ContactForm";
 
-export default function EditPartnerForm({record, onEdit, onClose}) {
+export default function EditPartnerForm({session, record, onEdit, onClose}) {
     const [partner, setPartner] = useState({
         id: "",
         type: "",
@@ -149,7 +149,7 @@ export default function EditPartnerForm({record, onEdit, onClose}) {
               />
             </TabPane>
             <TabPane tabId="2">
-                <ContactForm setContacts={setContacts} partner_id={partner.id} />
+                <ContactForm session={session} setContacts={setContacts} partner_id={partner.id} />
             </TabPane>
           </TabContent>
         </ModalBody>
