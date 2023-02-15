@@ -85,6 +85,10 @@ export default async function usermgr(req, res) {
   if (req.headers["authorization"]) {
     config.headers["Authorization"] = req.headers["authorization"];
 
+    if (req.headers["accept-language"]) {
+      config.headers["accept-language"] = req.headers["accept-language"];
+    }
+
     switch (req.method) {
       case "GET":
         // Nuestra lógica de código para el método GET...
