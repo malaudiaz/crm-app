@@ -1,4 +1,6 @@
 import axios from "axios";
+import languagesObject from "../../../languagesObject";
+
 const config = {
   headers: {
     "Content-Type": "application/json",
@@ -83,6 +85,8 @@ const deleteUser = async (req, res) => {
 };
 
 export default async function usermgr(req, res) {
+  const t = languagesObject[req.headers["accept-language"]].services;
+
   if (req.headers["authorization"]) {
     config.headers["Authorization"] = req.headers["authorization"];
 
@@ -92,30 +96,26 @@ export default async function usermgr(req, res) {
   
     switch (req.method) {
       case "GET":
-        // Nuestra lógica de código para el método GET...
         return getUsers(req, res);
         break;
       case "POST":
-        // Nuestra lógica de código para el método POST...
         return createUser(req, res);
         break;
       case "PUT":
-        // Nuestra lógica de código para el método PUT...
         return updateUser(req, res);
         break;
       case "DELETE":
-        // Nuestra lógica de código para el método DELETE...
         return deleteUser(req, res);
         break;
       default:
         res.status(405).json({
-          mensaje: `El método HTTP ${req.method} no esta disponible en esta ruta`,
+          mensaje: t.badRoute,
         });
         break;
     }
   } else {
     res.status(401).json({
-      mensaje: 'Esquema de Autentificación erróneo',
+      mensaje: t.badScheema,
     });
   }
 }

@@ -117,6 +117,10 @@ let languagesObject = {
       criteriaValueFeed: "Please type the value of the criteria for the filter.",
       btnClose: "Close",
       btnAccept: "Accept"
+    },
+    services: {
+      badRoute: "The method is not available in this route",
+      badScheema: "Wrong Authentication Scheme"
     }
   },
   es: {
@@ -239,7 +243,11 @@ let languagesObject = {
       criteriaValueFeed: "Por favor teclee el valor del críterio para el filtro.",
       btnClose: "Cerrar",
       btnAccept: "Aceptar"
-    }
+    },
+    services: {
+      badRoute: "El método no esta disponible en esta ruta",
+      badScheema: "Esquema de Autentificación erróneo"
+    }    
   },
 };
 
