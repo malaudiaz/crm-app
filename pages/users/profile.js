@@ -37,11 +37,13 @@ export default function Profile({ session }) {
   const config = {
     headers: {
       "Content-Type": "application/json",
-      Accept: "application/json",
-      "accept-Language": "es-ES,es;",
-      Authorization: `Bearer ${session.token}`,
+      "Accept": "application/json",
+      "accept-Language": session.locale,
+      "Authorization": `Bearer ${session.token}`,
     },
   };
+
+  console.log(config);
 
   const [profile, setProfile] = useState({
     id: "",
@@ -93,7 +95,7 @@ export default function Profile({ session }) {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "Ha ocurrido un error al consultar la API",
+          text: "Ha ocurrido un error al consultar la API...",
           showConfirmButton: true,
         });
       }

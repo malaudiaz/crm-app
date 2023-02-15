@@ -40,9 +40,9 @@ export default function List({ session, rowsPerPage }) {
   const config = {
     headers: {
       "Content-Type": "application/json",
-      Accept: "application/json",
-      "accept-Language": "es-ES,es;",
-      Authorization: `Bearer ${session.token}`,
+      "Accept": "application/json",
+      "accept-Language": session.locale,
+      "Authorization": `Bearer ${session.token}`,
     },
   };
 

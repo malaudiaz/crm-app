@@ -11,7 +11,7 @@ export default function ContractStatus({session, id, handleChange, validForm, va
     headers: {
       "Content-Type": "application/json",
       "Accept": "application/json",
-      "accept-Language": "es-ES,es;",
+      "accept-Language": session.locale,
       "Authorization": `Bearer ${session.token}`,
     },
   };    

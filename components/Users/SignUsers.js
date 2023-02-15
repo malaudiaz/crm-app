@@ -11,7 +11,7 @@ export default function SignUser({ session, id, handleChange, validForm, valDefa
     headers: {
       "Content-Type": "application/json",
       "Accept": "application/json",
-      "accept-Language": "es-ES,es;",
+      "accept-Language": session.locale,
       "Authorization": `Bearer ${session.token}`,
     },
   };  

@@ -52,7 +52,7 @@ export default function FinderPartner({ session, id, changePartner, contract }) 
     headers: {
       "Content-Type": "application/json",
       "Accept": "application/json",
-      "accept-Language": "es-ES,es;",
+      "accept-Language": session.locale,
       "Authorization": `Bearer ${session.token}`,
     },
   };    
