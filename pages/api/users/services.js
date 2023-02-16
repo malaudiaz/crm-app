@@ -85,7 +85,8 @@ const deleteUser = async (req, res) => {
 };
 
 export default async function usermgr(req, res) {
-  const t = languagesObject[req.headers["accept-language"]].services;
+  const locale = req.headers["accept-language"].split(",")[0].split("-")[0];
+  const t = languagesObject[locale].services;
 
   if (req.headers["authorization"]) {
     config.headers["Authorization"] = req.headers["authorization"];
