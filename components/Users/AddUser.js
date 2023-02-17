@@ -33,7 +33,6 @@ export default function AddUserForm({ onAdd, onClose }) {
   const [validate, setValidate] = useState({
     username: "",
     fullname: "",
-    dni: "",
     email: "",
     password: ""
   });
@@ -44,7 +43,6 @@ export default function AddUserForm({ onAdd, onClose }) {
     setValidate({
       ...validate,
       username: users.username != "" ? "success" : "error",
-      dni: users.dni != "" ? "success" : "error",
       fullname: users.fullname != "" ? "success" : "error",
       email: users.email != "" ? "success" : "error",
       password: users.password != "" ? "success" : "error",
@@ -52,7 +50,6 @@ export default function AddUserForm({ onAdd, onClose }) {
 
     if (
       validate.username === "success" &&
-      validate.dni === "success" &&
       validate.fullname === "success" &&
       validate.password === "success" &&
       validate.email === "success"
@@ -126,11 +123,8 @@ export default function AddUserForm({ onAdd, onClose }) {
                   id="dni"
                   maxLength={11}
                   placeholder={t.dni}
-                  valid={validate.dni === "success"}
-                  invalid={validate.dni === "error"}
                   value={users.dni}
                   onChange={(e) => {
-                    validForm(e);
                     handleChange(e);
                   }}
                   onKeyPress={(event) => {
