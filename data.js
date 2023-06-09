@@ -37,13 +37,49 @@ export const menus = [
         target:null
     },
     {
-        id:4,
-        text:"Profile",
-        iconClass:"bi bi-person",
-        path:"/users/profile",
-        hasChild:false,
-        parent_id:null,
-        target:null
+      id: 4,
+      text: "Invoices",
+      iconClass: "bi bi-receipt",
+      path: "/invoices/list",
+      hasChild: false,
+      parent_id: null,
+      target: null
+    },
+    {
+      id: 5,
+      text: "Offers",
+      iconClass: "bi bi-briefcase",
+      path: "/offers/list",
+      hasChild: false,
+      parent_id: null,
+      target: null
+    },
+    {
+      id: 6,
+      text: "Inventario",
+      iconClass: "bi bi-bi bi-archive",
+      path: "/",
+      hasChild: true,
+      parent_id: null,
+      target: ["Products"]
+    },
+    {
+      id: 7,
+      text: "Products",
+      iconClass: "bi bi-boxes",
+      path: "/products/list",
+      hasChild: false,
+      parent_id: 6,
+      target: null
+    },
+    {
+      id:8,
+      text:"Profile",
+      iconClass:"bi bi-person",
+      path:"/users/profile",
+      hasChild:false,
+      parent_id:null,
+      target:null
     }
 ];
 

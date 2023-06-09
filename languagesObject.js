@@ -26,6 +26,10 @@ let languagesObject = {
       List: "List",
       Partner: "Partner",
       Contracts: "Contracts",
+      Invoices: "Invoices",
+      Offers: 'Offers',
+      Inventory: "Inventory",
+      Products: "Products",
       Profile: "Profile"
     },
     header: {
@@ -152,7 +156,11 @@ let languagesObject = {
       List: "Listado",
       Partner: "Clientes",
       Contracts: "Contratos",
-      Profile: "Pérfil"
+      Offers: "Ofertas",
+      Invoices: "Facturas",
+      Inventory: "Inventario",
+      Products: "Productos",
+      Profile: "Perfil"
     },
     header: {
       title: "Dominó",
@@ -160,7 +168,7 @@ let languagesObject = {
       logOutText: "Esta seguro que desea cerrar la sesión ?",
       confirmButtonText: "Sí",
       cancelButtonText: "No",
-      profile: "Pérfil",
+      profile: "Perfil",
       logOut: "Desconectarse"
     },
     home: {
