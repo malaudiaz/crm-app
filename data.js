@@ -37,7 +37,16 @@ export const menus = [
         target:null
     },
     {
-        id:4,
+      id:4,
+      text:"Billing",
+      iconClass:"bi bi-receipt",
+      path:"/billing/list",
+      hasChild:false,
+      parent_id:null,
+      target:null
+    },
+    {
+        id:5,
         text:"Profile",
         iconClass:"bi bi-person",
         path:"/users/profile",
@@ -94,3 +103,11 @@ export const messages = [
         photo: "/messages-3.jpg"
     }
 ];
+
+export const numFormat = (value) => {
+  let USDollar = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  });
+  return USDollar.format(value);
+}

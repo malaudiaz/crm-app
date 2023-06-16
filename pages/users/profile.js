@@ -43,8 +43,6 @@ export default function Profile({ session }) {
     },
   };
 
-  console.log(config);
-
   const [profile, setProfile] = useState({
     id: "",
     username: "",

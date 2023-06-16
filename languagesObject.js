@@ -26,6 +26,7 @@ let languagesObject = {
       List: "List",
       Partner: "Partner",
       Contracts: "Contracts",
+      Billing: "Billing",
       Profile: "Profile"
     },
     header: {
@@ -152,10 +153,11 @@ let languagesObject = {
       List: "Listado",
       Partner: "Clientes",
       Contracts: "Contratos",
+      Billing: "Facturación",
       Profile: "Pérfil"
     },
     header: {
-      title: "Dominó",
+      title: "Simple - CRM",
       logOutTitle: "Cerrar Sesión",
       logOutText: "Esta seguro que desea cerrar la sesión ?",
       confirmButtonText: "Sí",
