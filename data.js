@@ -37,24 +37,6 @@ export const menus = [
         target:null
     },
     {
-<<<<<<< HEAD
-      id:4,
-      text:"Billing",
-      iconClass:"bi bi-receipt",
-      path:"/billing/list",
-      hasChild:false,
-      parent_id:null,
-      target:null
-    },
-    {
-        id:5,
-        text:"Profile",
-        iconClass:"bi bi-person",
-        path:"/users/profile",
-        hasChild:false,
-        parent_id:null,
-        target:null
-=======
       id: 4,
       text: "Invoices",
       iconClass: "bi bi-receipt",
@@ -98,7 +80,6 @@ export const menus = [
       hasChild:false,
       parent_id:null,
       target:null
->>>>>>> 4806e955a3f6844dc8d55395eb6fb9817bfd8002
     }
 ];
 
