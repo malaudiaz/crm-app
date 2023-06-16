@@ -40,7 +40,7 @@ export const menus = [
       id: 4,
       text: "Invoices",
       iconClass: "bi bi-receipt",
-      path: "/invoices/list",
+      path: "/billing/list",
       hasChild: false,
       parent_id: null,
       target: null
@@ -131,10 +131,11 @@ export const messages = [
     }
 ];
 
-export const numFormat = (value) => {
+export default function numFormat(value) {
   let USDollar = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
   });
   return USDollar.format(value);
-}
+};
+
