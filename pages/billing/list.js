@@ -8,7 +8,7 @@ import Pagination from "../../components/Core/Pagination";
 import ModalForm from "../../components/Core/ModalForm";
 import TableTool from "../../components/Core/TableTool";
 import fs from "fs";
-import numFormat from "../../data";
+import { numFormat } from "../../data";
 
 
 export default function List({ session, rowsPerPage }) {

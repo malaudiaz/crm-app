@@ -131,7 +131,7 @@ export const messages = [
     }
 ];
 
-export default function numFormat(value) {
+function numFormat(value) {
   let USDollar = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -139,3 +139,4 @@ export default function numFormat(value) {
   return USDollar.format(value);
 };
 
+export {numFormat};
