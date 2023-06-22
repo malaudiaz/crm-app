@@ -1,22 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Form,
   Row,
   Col,
-  FormGroup,
+  Form,
   Button,
   Label,
+  FormGroup,
   InputGroup,
   Input,
   FormFeedback
 } from "reactstrap";
 
-export default function AddProductForm({ onAdd, onClose }) {
- 
-  const [product, setProduct] = useState({
+import axios from "axios";
+import Swal from 'sweetalert2'
+import LoadingForm from "../Core/Loading";
+
+export default function EditContactForm({ record, onSave, onClose }) {
+  const [loading, setLoading] = useState(false);
+  const [contact, setContact] = useState({
     id: "",
     name: "",
     job: "",
@@ -34,26 +38,68 @@ export default function AddProductForm({ onAdd, onClose }) {
     phone: ""
   });  
 
-  const contactSubmit = async (e) => {
-    e.preventDefault();
+  useEffect(()=>{
+    if (record.length > 0) {
+        setContact({
+            id: record[0].id,
+            name: record[0].name,
+            address: record[0].address,
+            job: record[0].job,
+            dni: record[0].dni,
+            email: record[0].email,
+            phone: record[0].phone,
+            mobile: record[0].mobile
+        })
+        setValidate({
+          name: record[0].name != "" ? "success" : "error",
+          address: record[0].address != "" ? "success" : "error",
+          job: record[0].job != "" ? "success" : "error",
+          phone: record[0].phone != "" ? "success" : "error"
+        })
+    }
+  }, [record]);  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();    
 
     setValidate({
-      ...validate,
-      name: contact.name != "" ? "success" : "error",
-      address: contact.address != "" ? "success" : "error",
-      job: contact.job != "" ? "success" : "error",
-      phone: contact.phone != "" ? "success" : "error"
+        ...validate,
+        name: contact.name != "" ? "success" : "error",
+        address: contact.address != "" ? "success" : "error",
+        job: contact.job != "" ? "success" : "error",
+        phone: contact.phone != "" ? "success" : "error",
     });
-
+  
     if (
       validate.name === "success" &&
       validate.address === "success" &&
       validate.job === "success" &&
       validate.phone === "success"
     ) {
-      onAdd(contact);
+
+      setLoading(true);
+      const url = `/api/contacts/services?id=${contact.id}`
+      try {
+        await axios.put(url, contact);
+        setLoading(false);
+      } catch (errors) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al consultar la API',
+          showConfirmButton: true,
+        });           
+      }
+      Swal.fire({
+        icon: 'success',
+        title: 'Operación Exitosa',
+        text: 'Contácto modificado con éxito',
+        showConfirmButton: true,
+      });      
+      onSave(contact); 
     }
-  };
+  };  
+
 
   const validForm = (event) => {
     const { target } = event;
@@ -75,11 +121,11 @@ export default function AddProductForm({ onAdd, onClose }) {
       ...contact,
       [name]: value,
     });
-  };
+  };  
 
   return (
-    <Form className="form" onSubmit={contactSubmit}>
-      <ModalHeader toggle={onClose}>Nuevo Contacto</ModalHeader>
+    <Form className="form" onSubmit={handleSubmit}>
+      <ModalHeader toggle={onClose}>Editar Contacto</ModalHeader>
       <ModalBody>
         <Row>
           <Col>
@@ -105,7 +151,7 @@ export default function AddProductForm({ onAdd, onClose }) {
                   }}
                 />
                 <FormFeedback>
-                  Por favor teclee el nombre del contacto.
+                  Por favor, teclee el nombre del contacto.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
@@ -160,7 +206,7 @@ export default function AddProductForm({ onAdd, onClose }) {
                   }}
                 />
                 <FormFeedback>
-                  Por favor teclee el nombre del contacto.
+                  Por favor, teclee la dirección del contacto.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
@@ -191,14 +237,14 @@ export default function AddProductForm({ onAdd, onClose }) {
                   }}
                 />
                 <FormFeedback>
-                  Por favor teclee el DNI del contacto.
+                  Por favor, teclee el DNI del contacto.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
           </Col>
           <Col md={6}>
             <FormGroup>
-              <Label>Coreo</Label>
+              <Label>Correo</Label>
               <InputGroup size="sm">
                 <Input
                   type="text"
@@ -219,7 +265,7 @@ export default function AddProductForm({ onAdd, onClose }) {
                   }}
                 />
                 <FormFeedback>
-                  Por favor teclee el correo del contacto.
+                  Por favor, teclee el correo del contacto.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
@@ -279,7 +325,7 @@ export default function AddProductForm({ onAdd, onClose }) {
                   }}
                 />
                 <FormFeedback>
-                  Por favor teclee el móvil del contacto.
+                  Por favor, teclee el móvil del contacto.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>          
@@ -291,9 +337,17 @@ export default function AddProductForm({ onAdd, onClose }) {
           <i className="bi bi-x-circle"></i> Cerrar
         </Button>
         <Button type="submit" color="primary">
-          <i className="bi bi-check2-circle"></i> Aceptar
+          <i className="bi bi-check2-circle"></i> Grabar
         </Button>
       </ModalFooter>
+
+      <LoadingForm
+        id={"loading"}
+        open={loading}
+        size='sm'
+        waitMsg={"Por favor, espere"}
+      />
+
     </Form>
   );
 }

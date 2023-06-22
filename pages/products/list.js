@@ -4,10 +4,10 @@ import Layout from "../../layouts/Layout";
 import DataTable from "../../components/Core/DataTable";
 import Pagination from "../../components/Core/Pagination";
 import ModalForm from "../../components/Core/ModalForm";
-import AddParnetForm from "../../components/Partner/AddPartner";
-import EditPartnerForm from "../../components/Partner/EditPartner";
+import AddProductForm from "../../components/Product/AddProduct";
+import EditProductForm from "../../components/Product/EditProduct";
 import TableTool from "../../components/Core/TableTool";
-import FindPartnerForm from "../../components/Partner/FindPartner";
+import FindProductForm from "../../components/Product/FindProduct";
 import LoadingForm from "../../components/Core/Loading";
 
 import AppContext from "../../AppContext";

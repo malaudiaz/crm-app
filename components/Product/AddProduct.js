@@ -1,105 +1,57 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Form,
   Row,
   Col,
-  Form,
+  FormGroup,
   Button,
   Label,
-  FormGroup,
   InputGroup,
   Input,
   FormFeedback
 } from "reactstrap";
 
-import axios from "axios";
-import Swal from 'sweetalert2'
-import LoadingForm from "../../components/Core/Loading";
-
-export default function EditContactForm({ record, onSave, onClose }) {
-  const [loading, setLoading] = useState(false);
-  const [contact, setContact] = useState({
+export default function AddProductForm({ onAdd, onClose }) {
+ 
+  const [product, setProduct] = useState({
     id: "",
+    code: "",
     name: "",
-    job: "",
-    address: "",
-    dni: "",
-    email: "",
-    phone: "",
-    mobile: ""
+    description: "",
+    unit_price: "",
+    sale_price: "",
+    ledger_account: "",
+    measure_id: ""
   });
 
   const [validate, setValidate] = useState({
+    code: "",
     name: "",
-    address: "",
-    job: "",
-    phone: ""
+    description: ""
+    
   });  
 
-  useEffect(()=>{
-    if (record.length > 0) {
-        setContact({
-            id: record[0].id,
-            name: record[0].name,
-            address: record[0].address,
-            job: record[0].job,
-            dni: record[0].dni,
-            email: record[0].email,
-            phone: record[0].phone,
-            mobile: record[0].mobile
-        })
-        setValidate({
-          name: record[0].name != "" ? "success" : "error",
-          address: record[0].address != "" ? "success" : "error",
-          job: record[0].job != "" ? "success" : "error",
-          phone: record[0].phone != "" ? "success" : "error"
-        })
-    }
-  }, [record]);  
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();    
+  const productSubmit = async (e) => {
+    e.preventDefault();
 
     setValidate({
-        ...validate,
-        name: contact.name != "" ? "success" : "error",
-        address: contact.address != "" ? "success" : "error",
-        job: contact.job != "" ? "success" : "error",
-        phone: contact.phone != "" ? "success" : "error",
+      ...validate,
+      code: product.code != "" ? "success" : "error",
+      name: product.name != "" ? "success" : "error",
+      description: product.description != "" ? "success" : "error"      
     });
-  
+
     if (
+      validate.code === "success" &&
       validate.name === "success" &&
-      validate.address === "success" &&
-      validate.job === "success" &&
-      validate.phone === "success"
+      validate.description === "success"       
     ) {
-
-      setLoading(true);
-      const url = `/api/contacts/services?id=${contact.id}`
-      try {
-        await axios.put(url, contact);
-        setLoading(false);
-      } catch (errors) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ha ocurrido un error al consultar la API',
-          showConfirmButton: true,
-        });           
-      }
-      Swal.fire({
-        icon: 'success',
-        title: 'Operación Exitosa',
-        text: 'Contácto modificado con éxito',
-        showConfirmButton: true,
-      });      
-      onSave(contact); 
+      onAdd(product);
     }
-  };  
-
+  };
 
   const validForm = (event) => {
     const { target } = event;
@@ -117,16 +69,46 @@ export default function EditContactForm({ record, onSave, onClose }) {
     const value = target.type === "checkbox" ? target.checked : target.value;
     const { name } = target;
 
-    setContact({
-      ...contact,
+    setProduct({
+      ...product,
       [name]: value,
     });
-  };  
+  };
 
   return (
-    <Form className="form" onSubmit={handleSubmit}>
-      <ModalHeader toggle={onClose}>Editar Contacto</ModalHeader>
+    <Form className="form" onSubmit={productSubmit}>
+      <ModalHeader toggle={onClose}>Nuevo Producto</ModalHeader>
       <ModalBody>
+        <Row>
+          <Col>
+            <FormGroup>
+              <Label>Código</Label>
+              <InputGroup size="sm">
+                <Input
+                  type="text"
+                  name="code"
+                  id="code"
+                  placeholder="Código"
+                  valid={validate.code === "success"}
+                  invalid={validate.code === "error"}
+                  value={product.name}
+                  onChange={(e) => {
+                    validForm(e);
+                    handleChange(e);
+                  }}
+                  onKeyPress={(event) => {
+                    if (!/^[a-zA-Z\s]*$/.test(event.key)) {
+                      event.preventDefault();
+                    }
+                  }}
+                />
+                <FormFeedback>
+                  Por favor teclee el código del producto.
+                </FormFeedback>
+              </InputGroup>
+            </FormGroup>
+          </Col>
+        </Row>
         <Row>
           <Col>
             <FormGroup>
@@ -137,39 +119,9 @@ export default function EditContactForm({ record, onSave, onClose }) {
                   name="name"
                   id="name"
                   placeholder="Nombre"
-                  valid={validate.name === "success"}
-                  invalid={validate.name === "error"}
-                  value={contact.name}
-                  onChange={(e) => {
-                    validForm(e);
-                    handleChange(e);
-                  }}
-                  onKeyPress={(event) => {
-                    if (!/^[a-zA-Z\s]*$/.test(event.key)) {
-                      event.preventDefault();
-                    }
-                  }}
-                />
-                <FormFeedback>
-                  Por favor, teclee el nombre del contacto.
-                </FormFeedback>
-              </InputGroup>
-            </FormGroup>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <FormGroup>
-              <Label>Cargo</Label>
-              <InputGroup size="sm">
-                <Input
-                  type="text"
-                  name="job"
-                  id="job"
-                  placeholder="Cargo"
                   valid={validate.job === "success"}
                   invalid={validate.job === "error"}
-                  value={contact.job}
+                  value={product.description}
                   onChange={(e) => {
                     validForm(e);
                     handleChange(e);
@@ -181,7 +133,7 @@ export default function EditContactForm({ record, onSave, onClose }) {
                   }}
                 />
                 <FormFeedback>
-                  Por favor teclee el cargo del contacto.
+                  Por favor teclee el nombre del producto.
                 </FormFeedback>           
               </InputGroup>
             </FormGroup>          
@@ -190,32 +142,32 @@ export default function EditContactForm({ record, onSave, onClose }) {
         <Row>
           <Col>
             <FormGroup>
-              <Label>Dirección</Label>
+              <Label>Descripción</Label>
               <InputGroup size="sm">
                 <Input
                   type="text"
-                  name="address"
-                  id="address"
-                  placeholder="Dirección"
+                  name="description"
+                  id="description"
+                  placeholder="Descripción"
                   valid={validate.address === "success"}
                   invalid={validate.address === "error"}
-                  value={contact.address}
+                  value={product.description}
                   onChange={(e) => {
                     validForm(e);
                     handleChange(e);
                   }}
                 />
                 <FormFeedback>
-                  Por favor, teclee la dirección del contacto.
+                  Por favor teclee la descripción del producto.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
           </Col>
         </Row>
         <Row>
-          <Col md={6}>
+          <Col>
             <FormGroup>
-              <Label>DNI</Label>
+              <Label>Unidad de Medida</Label>
               <InputGroup size="sm">
                 <Input
                   type="text"
@@ -225,7 +177,7 @@ export default function EditContactForm({ record, onSave, onClose }) {
                   placeholder="DNI"
                   valid={validate.dni === "success"}
                   invalid={validate.dni === "error"}
-                  value={contact.dni}
+                  value={product.dni}
                   onChange={(e) => {
                     validForm(e);
                     handleChange(e);
@@ -237,14 +189,14 @@ export default function EditContactForm({ record, onSave, onClose }) {
                   }}
                 />
                 <FormFeedback>
-                  Por favor, teclee el DNI del contacto.
+                  Por favor teclee el DNI del contacto.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
           </Col>
           <Col md={6}>
             <FormGroup>
-              <Label>Correo</Label>
+              <Label>Coreo</Label>
               <InputGroup size="sm">
                 <Input
                   type="text"
@@ -253,7 +205,7 @@ export default function EditContactForm({ record, onSave, onClose }) {
                   placeholder="Correo"
                   valid={validate.email === "success"}
                   invalid={validate.email === "error"}
-                  value={contact.email}
+                  value={product.email}
                   onChange={(e) => {
                     validForm(e);
                     handleChange(e);
@@ -265,7 +217,7 @@ export default function EditContactForm({ record, onSave, onClose }) {
                   }}
                 />
                 <FormFeedback>
-                  Por favor, teclee el correo del contacto.
+                  Por favor teclee el correo del contacto.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
@@ -284,7 +236,7 @@ export default function EditContactForm({ record, onSave, onClose }) {
                   placeholder="Teléfono"
                   valid={validate.phone === "success"}
                   invalid={validate.phone === "error"}
-                  value={contact.phone}
+                  value={product.phone}
                   onChange={(e) => {
                     validForm(e);
                     handleChange(e);
@@ -313,7 +265,7 @@ export default function EditContactForm({ record, onSave, onClose }) {
                   maxLength={8}
                   valid={validate.mobile === "success"}
                   invalid={validate.mobile === "error"}
-                  value={contact.mobile}
+                  value={product.mobile}
                   onChange={(e) => {
                     validForm(e);
                     handleChange(e);
@@ -325,7 +277,7 @@ export default function EditContactForm({ record, onSave, onClose }) {
                   }}
                 />
                 <FormFeedback>
-                  Por favor, teclee el móvil del contacto.
+                  Por favor teclee el móvil del contacto.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>          
@@ -337,17 +289,9 @@ export default function EditContactForm({ record, onSave, onClose }) {
           <i className="bi bi-x-circle"></i> Cerrar
         </Button>
         <Button type="submit" color="primary">
-          <i className="bi bi-check2-circle"></i> Grabar
+          <i className="bi bi-check2-circle"></i> Aceptar
         </Button>
       </ModalFooter>
-
-      <LoadingForm
-        id={"loading"}
-        open={loading}
-        size='sm'
-        waitMsg={"Por favor, espere"}
-      />
-
     </Form>
   );
 }
