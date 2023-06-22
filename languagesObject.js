@@ -163,7 +163,7 @@ let languagesObject = {
       Profile: "Perfil"
     },
     header: {
-      title: "Dominó",
+      title: "Simple - CRM",
       logOutTitle: "Cerrar Sesión",
       logOutText: "Esta seguro que desea cerrar la sesión ?",
       confirmButtonText: "Sí",
