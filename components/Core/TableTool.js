@@ -14,7 +14,7 @@ const TableTool = ({title, openForm, openFind, isFindMode, closFind, showNewBtn 
             <Col>
                 <h2>{t.tableTitle} <b>{title}</b></h2>
             </Col>
-            <Col>
+            <Col style={{textAlign: "end"}}>
                 <a
                     className={!isFindMode ? "btn btn-danger" : "btn btn-info"}
                     onClick={!isFindMode ? openFind : closFind}
@@ -24,6 +24,7 @@ const TableTool = ({title, openForm, openFind, isFindMode, closFind, showNewBtn 
                     <i className={!isFindMode ? "bi bi-funnel" : "bi bi-funnel-fill"}></i>{" "}
                     <span>{!isFindMode ? t.filterOn : t.filterOff}</span>
                 </a>
+                {" "}
                 {showNewBtn && (<a
                     className="btn btn-success"
                     onClick={openForm}
