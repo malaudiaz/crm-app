@@ -60,26 +60,26 @@ export default function AddProdOffer({session, onClose}) {
             }
             setLoading(true);
 
-            // try {
-            const { data } = await axios.get(url, config);
-            
-            setLoading(false);
+            try {
+                const { data } = await axios.get(url, config);
+                
+                setLoading(false);
 
-            setTotal(data.result.total);
-            setTotalPages(data.result.total_pages);
-            setRecords(data.result.data);
+                setTotal(data.result.total);
+                setTotalPages(data.result.total_pages);
+                setRecords(data.result.data);
 
-            setReload(false);
-            // } catch (error) {
-            //     setLoading(false);
+                setReload(false);
+            } catch (error) {
+                setLoading(false);
 
-            //     Swal.fire({
-            //         icon: "error",
-            //         title: "Error",
-            //         text: "Ha ocurrido un error al consultar la API",
-            //         showConfirmButton: true,
-            //     });
-            // }
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Ha ocurrido un error al consultar la API",
+                    showConfirmButton: true,
+                });
+            }
         };
         fetchData();
 
@@ -156,43 +156,27 @@ export default function AddProdOffer({session, onClose}) {
                             openFind={openFindProduct}
                             closFind={closeFindProduct}
                             isFindMode={findMode}
+                            showNewBtn={false}
                             loading={loading}
                         />
-                    </FormGroup>
-                    {/* <Col md={2}>
-                        <InputGroup style={{ paddingLeft: "50px" }}>
-                            <Button
-                                id="btnAddProduct"
-                                type="button"
-                                onClick={() => {
-                                    setOpenFind(true);
-                                }}
-                                color="primary"
-                                outline
-                                data-toggle="tooltip"
-                                title="Adicionar Producto"          >
-                                <i className="bi bi-plus-circle"></i>
-                            </Button>
-                        </InputGroup>
-                    </Col> */}
+                    </FormGroup>                    
                 </Row>
                 <Row>
                     <Table bordered>
                         <thead>
                             <tr>
-                                <th style={{ width: "10p%", textAlign: "center" }}>
+                                <th style={{ width: "2%", textAlign: "center" }}>
                                     <span className="custom-checkbox">
-                                        <input type="checkbox" id="selectAll" disabled />
+                                        <input type="checkbox" id="selectAll" enabled />
                                         <label htmlFor="selectAll"></label>
                                     </span>
                                 </th>
-                                <th style={{ width: "20%", textAlign: "center" }} scope="col" key={columns[0].id}>
+                                <th style={{ width: "5%", textAlign: "center" }} scope="col" key={columns[0].id}>
                                     {columns[0].title}
                                 </th>
-                                <th style={{ width: "10p%", textAlign: "center" }} scope="col" key={columns[1].id}>
+                                <th style={{ width: "25%", textAlign: "center" }} scope="col" key={columns[1].id}>
                                     {columns[1].title}
-                                </th>
-                                <th style={{ textAlign: "center", width: "2%" }}>Acción</th>
+                                </th>                                
                             </tr>
                         </thead>
                         <tbody>
@@ -212,19 +196,7 @@ export default function AddProdOffer({session, onClose}) {
                                         </td>
                                         {columns.map((col, j) => (
                                             <td key={j}>{row[col.accessor]}</td>
-                                        ))}
-                                        <td style={{ width: "20p%", textAlign: "center" }}>
-                                            <a
-                                                className={row.selected ? "delete" : "disabled"}
-                                                onClick={(event) => onDelete(event, row)}
-                                            >
-                                                <i
-                                                    className="bi bi-trash-fill"
-                                                    data-toggle="tooltip"
-                                                    title="Eliminar"
-                                                ></i>
-                                            </a>
-                                        </td>
+                                        ))}                                        
                                     </tr>
                                 ))}
                         </tbody>

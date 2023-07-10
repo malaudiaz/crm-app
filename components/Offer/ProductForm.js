@@ -233,7 +233,7 @@ export default function ProductForm({ session, setProducts, offer_id, onClose}) 
           </tbody>
         </Table>
       </Row>
-      <ModalForm size="lg" id={"AddProdOfferForm"} open={openAdd}>
+      <ModalForm id={"AddProdOfferForm"} open={openAdd}>
         <AddProdOfferForm session={session} onClose={() => setOpenEdit(false)} />
       </ModalForm>
     </div>

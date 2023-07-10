@@ -23,21 +23,18 @@ const getProducts = async (req, res) => {
     }
   }
 
-  console.log(url);
-
-  // try {
-  const response = await axios.get(url, config);
-  console.log(response);
-  if (response.status == 200) {
-    return res.status(200).json({
-      result: response.data,
-    });
+  try {
+    const response = await axios.get(url, config);
+    if (response.status == 200) {
+      return res.status(200).json({
+        result: response.data,
+      });
+    }
+  } catch (errors) {
+    return res
+      .status(errors.response.status)
+      .json({ error: errors.response.statusText });
   }
-  // } catch (errors) {
-  //   return res
-  //     .status(errors.response.status)
-  //     .json({ error: errors.response.statusText });
-  // }
 };
 
 const createProduct = async (req, res) => {
