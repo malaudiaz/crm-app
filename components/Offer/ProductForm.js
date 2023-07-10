@@ -10,6 +10,10 @@ const columns = [{ id: 1, title: "Código", accessor: "code" },
 ];
 
 export default function ProductForm({ session, setProducts, offer_id, onClose}) {
+
+  console.log("****>", session.token);
+
+
   const [loading, setLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
@@ -37,7 +41,6 @@ export default function ProductForm({ session, setProducts, offer_id, onClose}) 
       setLoading(true);
       try {
         const { data } = await axios.get(url, config);
-        console.log(data)
         setLoading(false);
 
         setTotal(data.result.total);
@@ -56,8 +59,6 @@ export default function ProductForm({ session, setProducts, offer_id, onClose}) 
 
     };
 
-    console.log(mounted.current);
-    console.log(mounted.reload);
     if (!mounted.current) {
       // do componentDidMount logic
       if (offer_id != "") {
@@ -70,7 +71,7 @@ export default function ProductForm({ session, setProducts, offer_id, onClose}) 
         fetchData();
       }
     }
-  });
+  }, [reload]);
 
   const onItemCheck = (e, item) => {
     let tempList = records;
@@ -165,7 +166,8 @@ export default function ProductForm({ session, setProducts, offer_id, onClose}) 
             <Button
               id="btnAddProduct"
               type="button"
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
                 setOpenAdd(true);
               }}
               color="primary"
@@ -232,7 +234,7 @@ export default function ProductForm({ session, setProducts, offer_id, onClose}) 
         </Table>
       </Row>
       <ModalForm size="lg" id={"AddProdOfferForm"} open={openAdd}>
-        <AddProdOfferForm onClose={() => setOpenEdit(false)} />
+        <AddProdOfferForm session={session} onClose={() => setOpenEdit(false)} />
       </ModalForm>
     </div>
   );

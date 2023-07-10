@@ -10,9 +10,9 @@ const config = {
 
 const getProducts = async (req, res) => {
   const { page, per_page, criteria_key, criteria_value, offer_id } = req.query;
-  console.log(req.query);
+
   let url = `${process.env.API_URL}stock/product/products?page=${page}&per_page=${per_page}`;
-  
+ 
   if (offer_id) {
     url = `${process.env.API_URL}stock/product/offer${offer_id}&page=${page}&per_page=${per_page}`;
   } else
@@ -22,7 +22,9 @@ const getProducts = async (req, res) => {
         url + `&criteria_key=${criteria_key}&criteria_value=${criteria_value}`;
     }
   }
-  
+
+  console.log(url);
+
   // try {
   const response = await axios.get(url, config);
   console.log(response);

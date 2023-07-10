@@ -25,7 +25,7 @@ const columns = [{ id: 1, title: "Código", accessor: "code" },
                  { id: 2, title: "Nombre", accessor: "name" }
 ];
 
-export default function AddProdOffer(session, onClose) {
+export default function AddProdOffer({session, onClose}) {
     
     const [loading, setLoading] = useState(false);
     const [reload, setReload] = useState(false);
@@ -49,7 +49,7 @@ export default function AddProdOffer(session, onClose) {
             "Authorization": `Bearer ${session.token}`,
         },
     };  
-    
+ 
     useEffect(() => {
         
         const fetchData = async () => {
@@ -93,7 +93,7 @@ export default function AddProdOffer(session, onClose) {
         //         fetchData();
         //     }
         // }        
-    });
+    },[page]);
 
     const productSubmit = async (e) => {
         e.preventDefault();
