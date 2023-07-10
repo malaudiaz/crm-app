@@ -92,7 +92,7 @@ export default function FindProductForm({onFind, onClose }) {
                   <option value="name">Nombre</option>                  
                 </Input> 
                 <FormFeedback>
-                  Por favor entre el críterio para el filtro.
+                  Por favor entre el criterio para el filtro.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
@@ -119,7 +119,7 @@ export default function FindProductForm({onFind, onClose }) {
                 >
                 </Input>              
                 <FormFeedback>
-                  Por favor teclee el valor del críterio para el filtro.
+                  Por favor teclee el valor del criterio para el filtro.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
@@ -127,12 +127,12 @@ export default function FindProductForm({onFind, onClose }) {
         </Row>
       </ModalBody>
       <ModalFooter>
-        <Button type="button" onClick={onClose} color="secondary">
-          <i className="bi bi-x-circle"></i> Cerrar
-        </Button>
         <Button type="submit" color="primary">
           <i className="bi bi-check2-circle"></i> Aceptar
         </Button>
+        <Button type="button" onClick={onClose} color="secondary">
+          <i className="bi bi-x-circle"></i> Cerrar
+        </Button>        
       </ModalFooter>
     </Form>
   );

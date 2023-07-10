@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { Row, Col, Table, Button, InputGroup } from "reactstrap";
 import ModalForm from "../Core/ModalForm";
-import AddContactForm from "../Contact/AddContact";
-import EditContactForm from "../Contact/EditContact"
+import AddProdOfferForm from "../Offer/AddProdOffer";
 import axios from "axios";
 import Swal from 'sweetalert2'
 
-const columns = [{ id: 1, title: "Nombre", accessor: "name" }];
+const columns = [{ id: 1, title: "Código", accessor: "code" },
+                 { id: 2, title: "Nombre", accessor: "name" }
+];
 
-export default function ContactForm({ session, setContacts, partner_id }) {
+export default function ProductForm({ session, setProducts, offer_id, onClose}) {
   const [loading, setLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
@@ -20,7 +21,7 @@ export default function ContactForm({ session, setContacts, partner_id }) {
   const [totalPages, setTotalPages] = useState(0);
   const mounted = useRef(false);
   const rowsPerPage = 10;
-
+  
   const config = {
     headers: {
       "Content-Type": "application/json",
@@ -32,16 +33,17 @@ export default function ContactForm({ session, setContacts, partner_id }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const url = `/api/contacts/services?page=${page}&per_page=${rowsPerPage}&partner_id=${partner_id}`;
+      const url = `/api/products/services?page=${page}&per_page=${rowsPerPage}&offer_id=${offer_id}`;
       setLoading(true);
       try {
         const { data } = await axios.get(url, config);
+        console.log(data)
         setLoading(false);
 
         setTotal(data.result.total);
         setTotalPages(data.result.total_pages);
         setRecords(data.result.data);
-
+        
       } catch (error) {
         setLoading(false);
         Swal.fire({
@@ -54,9 +56,11 @@ export default function ContactForm({ session, setContacts, partner_id }) {
 
     };
 
+    console.log(mounted.current);
+    console.log(mounted.reload);
     if (!mounted.current) {
       // do componentDidMount logic
-      if (partner_id != "") {
+      if (offer_id != "") {
         mounted.current = true;
         fetchData();
       }
@@ -84,15 +88,15 @@ export default function ContactForm({ session, setContacts, partner_id }) {
     setSelected(selected);
   };
 
-  const delContact = async (contact_id) => {
-    const url = `/api/contacts/services?id=${contact_id}`;
+  const delProduct = async (product_id) => {
+    const url = `/api/offers/services?id=${product_id}`;
     await axios
     .delete(url)
     .then((res) => {
       Swal.fire({
         icon: 'success',
         title: 'Operación Exitosa',
-        text: 'Cliente eliminado con éxito',
+        text: 'Producto eliminado a la Oferta con éxito',
         showConfirmButton: true,
       });                     
       setLoading(false);
@@ -134,47 +138,32 @@ export default function ContactForm({ session, setContacts, partner_id }) {
             tmp.push(record);
           }
         });
-        delContact(item.id);
+        delProduct(item.id);
         setRecords(tmp);
       }     
     })
   };
 
-  const onEdit = (event, row) => {
-    event.preventDefault();
-    setOpenEdit(true);
-  }
-
-  const saveContact = (contact) => {
+  
+  const addProduct = (product) => {
     let tmp = records.length > 0 ? records : [];
-    tmp.push(contact);
+    tmp.push(product);
     setRecords(tmp);
-    setContacts(tmp);
+    setProducts(tmp);
     setOpenAdd(false);
   };
 
-  const updateContact = (contact) => {
-    let tmp = [];
-    records.map((record) => {
-      if (record.id !== contact.id) {
-        tmp.push(record);
-      }
-    });
-    tmp.push(contact);
-    setRecords(tmp);
-    setOpenEdit(false);
-  }
-
+  
   return (
     <div style={{ padding: "8px" }}>
       <Row>
         <Col md={9} style={{ display: "flex", alignItems: "flex-end" }}>
-          <h6>Contáctos del Cliente</h6>
+          <h6>Productos</h6>
         </Col>
         <Col md={2}>
-          <InputGroup size="sm" style={{ paddingLeft: "50px" }}>
+          <InputGroup style={{ paddingLeft: "50px" }}>
             <Button
-              id="btnAddContact"
+              id="btnAddProduct"
               type="button"
               onClick={() => {
                 setOpenAdd(true);
@@ -182,9 +171,8 @@ export default function ContactForm({ session, setContacts, partner_id }) {
               color="primary"
               outline
               data-toggle="tooltip"
-              title="Nuevo Contácto"
-          >
-              <i className="bi bi-person-plus-fill"></i>
+              title="Adicionar Productos"          >
+              <i className="bi bi-plus-circle"></i>
             </Button>
           </InputGroup>
         </Col>
@@ -198,13 +186,14 @@ export default function ContactForm({ session, setContacts, partner_id }) {
                   <input type="checkbox" id="selectAll" disabled />
                   <label htmlFor="selectAll"></label>
                 </span>
-              </th>
-              {columns.map(({ id, title, accessor }, idx) => (
-                <th scope="col" key={idx}>
-                  {title}
-                </th>
-              ))}
-              <th style={{ textAlign: "center", width: "20%" }}>Acción</th>
+              </th>    
+              <th style={{ width: "10p%", textAlign: "center" }} scope="col" key={columns[0].id}>
+                  {columns[0].title}
+              </th>              
+              <th style={{ width: "4p%", textAlign: "center" }} scope="col" key={columns[1].id}>
+                {columns[1].title}
+              </th>              
+              <th style={{ textAlign: "center", width: "2%" }}>Acción</th>
             </tr>
           </thead>
           <tbody>
@@ -227,17 +216,6 @@ export default function ContactForm({ session, setContacts, partner_id }) {
                   ))}
                   <td style={{ width: "20p%", textAlign: "center" }}>
                     <a
-                      className={row.selected ? "edit" : "disabled"}
-                      onClick={(event) => onEdit(event, row)}
-                    >
-                      <i
-                        className="bi bi-pencil-fill"
-                        data-toggle="tooltip"
-                        title="Editar"
-                      ></i>
-                    </a>
-
-                    <a
                       className={row.selected ? "delete" : "disabled"}
                       onClick={(event) => onDelete(event, row)}
                     >
@@ -253,14 +231,9 @@ export default function ContactForm({ session, setContacts, partner_id }) {
           </tbody>
         </Table>
       </Row>
-
-      <ModalForm id={"addContactForm"} open={openAdd}>
-        <AddContactForm onAdd={saveContact} onClose={() => setOpenAdd(false)} />
+      <ModalForm size="lg" id={"AddProdOfferForm"} open={openAdd}>
+        <AddProdOfferForm onClose={() => setOpenEdit(false)} />
       </ModalForm>
-      <ModalForm id={"editContactForm"} open={openEdit}>
-        <EditContactForm record={selected} onSave={updateContact} onClose={() => setOpenEdit(false)} />
-      </ModalForm>
-
     </div>
   );
 }

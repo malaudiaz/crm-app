@@ -141,12 +141,12 @@ export default function AddPartnerForm({ session, onAdd, onClose }) {
         </TabContent>
       </ModalBody>
       <ModalFooter>
+        <Button type="submit" color="primary">
+          <i className="bi bi-check2-circle"></i> Salvar
+        </Button>
         <Button type="button" onClick={onClose} color="secondary">
           <i className="bi bi-x-circle"></i> Cerrar
-        </Button>
-        <Button type="submit" color="primary">
-          <i className="bi bi-check2-circle"></i> Grabar
-        </Button>
+        </Button>        
       </ModalFooter>
     </Form>
   );

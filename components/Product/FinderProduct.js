@@ -23,13 +23,13 @@ const columns = [
   { id: 2, title: "DNI", accessor: "dni" },
 ];
 
-export default function FinderContact({ session, id, changeContact, contract }) {
+export default function FinderProduct({ session, id, changeProduct, product}) {
   const [loading, setLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const [records, setRecords] = useState([]);
   const [record, setRecord] = useState(null);
-  const [contact, setContact] = useState("");
-  const [openFinderPartner, setOpenFinderPartner] = useState(false);
+  const [product, setProduct] = useState("");
+  const [openFinderProduct, setOpenFinderProduct] = useState(false);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -45,7 +45,7 @@ export default function FinderContact({ session, id, changeContact, contract }) 
   };    
 
   const fetchData = async () => {
-    const url = `/api/contacts/services?page=${page}&per_page=${rowsPerPage}&partner_id=${contract.id_partner}`;
+    const url = `/api/product/services?page=${page}&per_page=${rowsPerPage}&product_id=${product.id_product}`;
     setLoading(true);
     try {
       const { data } = await axios.get(url, config);
@@ -59,7 +59,7 @@ export default function FinderContact({ session, id, changeContact, contract }) 
         Swal.fire({
           icon: 'info',
           title: 'Información',
-          text: 'No existen contáctos que cumplan con el críterio de búsqueda',
+          text: 'No existen productos que cumplan con el criterio de búsqueda',
           showConfirmButton: true,
         });           
       }
@@ -77,8 +77,8 @@ export default function FinderContact({ session, id, changeContact, contract }) 
 
 
   useEffect(() => {
-    setContact(contract.name_contact);
-  },[contract.name_contact]);
+    setProduct(product.name_product);
+  },[product.name_product]);
 
   const onChangePage = (pageNumber) => {
     setPage(pageNumber);
@@ -86,14 +86,14 @@ export default function FinderContact({ session, id, changeContact, contract }) 
   };
 
   const onOpenFinder = () => {
-    if (contract.id_partner !== "") {
+    if (product.id_product !== "") {
         fetchData();      
-        setOpenFinderPartner(true);
+        setOpenFinderProduct(true);
     } else {
       Swal.fire({
         icon: 'info',
         title: 'Atención',
-        text: 'Debe seleccionar un cliente, antes de seleccionar el contácto',
+        text: 'Debe seleccionar un producto, antes de seleccionar el contácto',
         showConfirmButton: true,
       });         
     }
@@ -106,9 +106,9 @@ export default function FinderContact({ session, id, changeContact, contract }) 
   };
 
   const onAcceptFinder = () => {
-    setContact(record.name);
+    setProduct(record.name);
 
-    changeContact(record);
+    changeProduct(record);
     onCloseFinder();
   };
 

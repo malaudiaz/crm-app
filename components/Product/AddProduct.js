@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   ModalHeader,
   ModalBody,
@@ -14,17 +14,37 @@ import {
   FormFeedback
 } from "reactstrap";
 
-export default function AddProductForm({ onAdd, onClose }) {
- 
+import axios from "axios";
+import Swal from 'sweetalert2'
+import { formatNumber } from "../../data";
+
+export default function AddProductForm({ session, onAdd, onClose }) {
+  const mounted = useRef(false);
+  // const [filter, setFilter] = useState({
+  //   criteria_key: "",
+  //   criteria_value: "",
+  // });
+
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "accept-Language": session.locale,
+      "Authorization": `Bearer ${session.token}`,
+    },
+  };  
+
   const [product, setProduct] = useState({
     id: "",
     code: "",
     name: "",
     description: "",
     unit_price: "",
+    cost_price: "",
     sale_price: "",
-    ledger_account: "",
-    measure_id: ""
+    measure_id: "",
+    ledger_account:""
+
   });
 
   const [validate, setValidate] = useState({
@@ -32,7 +52,48 @@ export default function AddProductForm({ onAdd, onClose }) {
     name: "",
     description: ""
     
-  });  
+  }); 
+  
+  const [measures, setMeasures] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const url = `/api/measure/services`;      
+      try {
+        const { data } = await axios.get(url, config);
+        console.log(data.result.data)
+        setMeasures(data.result.data);
+      } catch (error) {
+        console.log(error);
+        // setLoading(false);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error al consultar la API',
+          showConfirmButton: true,
+        });
+      }
+    };
+    
+    if (!mounted.current) {
+      mounted.current = true;
+      fetchData();
+    }
+    
+  });
+
+  const handleChange = (event) => {
+    const { target } = event;
+    
+    const value = target.type === "checkbox" ? target.checked : target.value;
+
+    const { name } = target;
+    
+    setProduct({
+      ...product,
+      [name]: value
+    });
+  };
 
   const productSubmit = async (e) => {
     e.preventDefault();
@@ -64,17 +125,6 @@ export default function AddProductForm({ onAdd, onClose }) {
     });
   };
 
-  const handleChange = (event) => {
-    const { target } = event;
-    const value = target.type === "checkbox" ? target.checked : target.value;
-    const { name } = target;
-
-    setProduct({
-      ...product,
-      [name]: value,
-    });
-  };
-
   return (
     <Form className="form" onSubmit={productSubmit}>
       <ModalHeader toggle={onClose}>Nuevo Producto</ModalHeader>
@@ -91,16 +141,16 @@ export default function AddProductForm({ onAdd, onClose }) {
                   placeholder="Código"
                   valid={validate.code === "success"}
                   invalid={validate.code === "error"}
-                  value={product.name}
+                  value={product.code}
                   onChange={(e) => {
                     validForm(e);
                     handleChange(e);
                   }}
-                  onKeyPress={(event) => {
-                    if (!/^[a-zA-Z\s]*$/.test(event.key)) {
-                      event.preventDefault();
-                    }
-                  }}
+                  // onKeyPress={(event) => {
+                  //   if (!/^[a-zA-Z\s]*$/.test(event.key)) {
+                  //     event.preventDefault();
+                  //   }
+                  // }}
                 />
                 <FormFeedback>
                   Por favor teclee el código del producto.
@@ -121,16 +171,16 @@ export default function AddProductForm({ onAdd, onClose }) {
                   placeholder="Nombre"
                   valid={validate.job === "success"}
                   invalid={validate.job === "error"}
-                  value={product.description}
+                  value={product.name}
                   onChange={(e) => {
                     validForm(e);
                     handleChange(e);
                   }}
-                  onKeyPress={(event) => {
-                    if (!/^[a-zA-Z\s]*$/.test(event.key)) {
-                      event.preventDefault();
-                    }
-                  }}
+                  // onKeyPress={(event) => {
+                  //   if (!/^[a-zA-Z\s]*$/.test(event.key)) {
+                  //     event.preventDefault();
+                  //   }
+                  // }}
                 />
                 <FormFeedback>
                   Por favor teclee el nombre del producto.
@@ -170,127 +220,90 @@ export default function AddProductForm({ onAdd, onClose }) {
               <Label>Unidad de Medida</Label>
               <InputGroup size="sm">
                 <Input
-                  type="text"
-                  name="dni"
-                  id="dni"
-                  maxLength={11}
-                  placeholder="DNI"
-                  valid={validate.dni === "success"}
-                  invalid={validate.dni === "error"}
-                  value={product.dni}
+                  id="measure_id"
+                  name="measure_id"
+                  type="select"
+                  value={product.measure_id}
                   onChange={(e) => {
                     validForm(e);
-                    handleChange(e);
+                    handleChange(e);                    
                   }}
-                  onKeyPress={(event) => {
-                    if (!/[0-9]/.test(event.key)) {
-                      event.preventDefault();
-                    }
-                  }}
-                />
+                >
+                  <option value="">Seleccione...</option>
+                  {measures.map((measures) => {
+                    return (
+                      <option key="measure_id" value={measures.id}>{measures.description}</option>
+                    );
+                  })}
+                </Input> 
                 <FormFeedback>
-                  Por favor teclee el DNI del contacto.
+                  Por favor seleccione la unidad de medida.
                 </FormFeedback>
               </InputGroup>
             </FormGroup>
-          </Col>
-          <Col md={6}>
-            <FormGroup>
-              <Label>Coreo</Label>
-              <InputGroup size="sm">
-                <Input
-                  type="text"
-                  name="email"
-                  id="email"
-                  placeholder="Correo"
-                  valid={validate.email === "success"}
-                  invalid={validate.email === "error"}
-                  value={product.email}
-                  onChange={(e) => {
-                    validForm(e);
-                    handleChange(e);
-                  }}
-                  onKeyPress={(event) => {
-                    if (!/^[a-z@_.\s]*$/.test(event.key)) {
-                      event.preventDefault();
-                    }
-                  }}
-                />
-                <FormFeedback>
-                  Por favor teclee el correo del contacto.
-                </FormFeedback>
-              </InputGroup>
-            </FormGroup>
-          </Col>
+          </Col>          
         </Row>
         <Row>
           <Col md={6}>
             <FormGroup>
-              <Label>Teléfono</Label>
+              <Label>Precio Costo</Label>
               <InputGroup size="sm">
                 <Input
                   type="text"
-                  name="phone"
-                  id="phone"
-                  maxLength={8}
-                  placeholder="Teléfono"
-                  valid={validate.phone === "success"}
-                  invalid={validate.phone === "error"}
-                  value={product.phone}
+                  name="cost_price"
+                  id="cost_price"
+                  placeholder="Precio Costo"
+                  // valid={validate.cost_price === "success"}
+                  // invalid={validate.cost_price === "error"}
+                  value={formatNumber(product.cost_price)}
                   onChange={(e) => {
                     validForm(e);
                     handleChange(e);
-                  }}
+                  }}  
                   onKeyPress={(event) => {
-                    if (!/[0-9]/.test(event.key)) {
+                    if (/[^0-9.]/.test(event.key)) {
                       event.preventDefault();
                     }
                   }}
-                />
-                <FormFeedback>
-                  Por favor teclee el teléfono del contacto.
-                </FormFeedback>
+                />                
               </InputGroup>
             </FormGroup>          
           </Col>
           <Col md={6}>
             <FormGroup>
-              <Label>Móvil</Label>
+              <Label>Precio Venta</Label>
               <InputGroup size="sm">
                 <Input
                   type="text"
-                  name="mobile"
-                  id="mobile"
-                  placeholder="Móvil"
-                  maxLength={8}
-                  valid={validate.mobile === "success"}
-                  invalid={validate.mobile === "error"}
-                  value={product.mobile}
+                  name="sale_price"
+                  id="sale_price"
+                  placeholder="Precio Ventas"
+                  // maxLength={8}
+                  // valid={validate.mobile === "success"}
+                  // invalid={validate.mobile === "error"}
+                  value={formatNumber(product.sale_price)}
                   onChange={(e) => {
                     validForm(e);
                     handleChange(e);
                   }}
                   onKeyPress={(event) => {
-                    if (!/[0-9]/.test(event.key)) {
+                    if (/[^0-9.]/.test(event.key)) {
                       event.preventDefault();
                     }
                   }}
-                />
-                <FormFeedback>
-                  Por favor teclee el móvil del contacto.
-                </FormFeedback>
+                />                
               </InputGroup>
             </FormGroup>          
           </Col>
         </Row>        
       </ModalBody>
       <ModalFooter>
+        <Button type="submit" color="primary">
+          <i className="bi bi-check2-circle"></i> Salvar
+        </Button>
         <Button type="button" onClick={onClose} color="secondary">
           <i className="bi bi-x-circle"></i> Cerrar
-        </Button>
-        <Button type="submit" color="primary">
-          <i className="bi bi-check2-circle"></i> Aceptar
-        </Button>
+        </Button>       
       </ModalFooter>
     </Form>
   );

@@ -127,12 +127,12 @@ export default function FindOfferForm({onFind, onClose }) {
         </Row>
       </ModalBody>
       <ModalFooter>
-        <Button type="button" onClick={onClose} color="secondary">
-          <i className="bi bi-x-circle"></i> Cerrar
-        </Button>
         <Button type="submit" color="primary">
           <i className="bi bi-check2-circle"></i> Aceptar
         </Button>
+        <Button type="button" onClick={onClose} color="secondary">
+          <i className="bi bi-x-circle"></i> Cerrar
+        </Button>        
       </ModalFooter>
     </Form>
   );

@@ -16,6 +16,7 @@ import classnames from "classnames";
 import OfferForm from "./OfferForm";
 import ProductForm from "./ProductForm";
 
+
 export default function AddOfferForm({ session, onAdd, onClose }) {
   const [offer, setOffer] = useState({
     id: "",
@@ -31,8 +32,7 @@ export default function AddOfferForm({ session, onAdd, onClose }) {
   const [validate, setValidate] = useState({
     code: "",
     name: "",
-    description: "",
-    sale_price: ""
+    description: ""    
   });
 
   const [activeTab, setActiveTab] = useState("1");
