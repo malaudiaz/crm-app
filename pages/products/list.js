@@ -25,10 +25,15 @@ const columns = [
   { id: 5, title: "Code", accessor: "code" },
   { id: 6, title: "Nombre", accessor: "name" },
   { id: 7, title: "Descripción", accessor: "description" },
-  { id: 8, title: "Unidad M.", accessor: "measure" },
+  { id: 8, title: "Unidad M.", accessor: "measure_description" },
   { id: 9, title: "Precio Unitario", accessor: "unit_price" },
   { id: 10, title: "Precio Costo", accessor: "cost_price" },
-  { id: 11, title: "Precio Venta", accessor: "unit_venta" }
+  { id: 11, title: "Precio Venta", accessor: "sale_price" }
+  // { id: 12, title: "MeasureID", accessor: "measure_id"},
+];
+
+const hiddenColumns = [
+  { id: 12, title: "MeasureID", accessor: "measure_id" },
 ];
 
 export default function List({ session, rowsPerPage }) {
@@ -60,8 +65,7 @@ export default function List({ session, rowsPerPage }) {
   };
 
   useEffect(() => {
-    value.setLanguageSelected(session.locale);
-
+    
     const fetchData = async () => {
       const url = `/api/products/services?page=${page}&per_page=${rowsPerPage}`;
       if (params != "") {
@@ -69,25 +73,25 @@ export default function List({ session, rowsPerPage }) {
       }
       setLoading(true);
 
-      try {
-        const { data } = await axios.get(url, config);
-        setLoading(false);
+      // try {
+      const { data } = await axios.get(url, config);
+      setLoading(false);
 
-        setTotal(data.result.total);
-        setTotalPages(data.result.total_pages);
-        setRecords(data.result.data);
+      setTotal(data.result.total);
+      setTotalPages(data.result.total_pages);
+      setRecords(data.result.data);
 
-        setReload(false);
-      } catch (error) {
-        setLoading(false);
+      setReload(false);
+      // } catch (error) {
+      //   setLoading(false);
 
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Ha ocurrido un error al consultar la API",
-          showConfirmButton: true,
-        });
-      }
+      //   Swal.fire({
+      //     icon: "error",
+      //     title: "Error",
+      //     text: "Ha ocurrido un error al consultar la API",
+      //     showConfirmButton: true,
+      //   });
+      // }
     };
 
     if (!mounted.current) {
@@ -156,6 +160,7 @@ export default function List({ session, rowsPerPage }) {
     selectedList.map(async (row) => {
       setLoading(true);
       const url = `/api/products/services?id=${row.id}`;
+      console.log(product);
       try {
         await axios.put(url, product, config);
         setLoading(false);
@@ -187,7 +192,7 @@ export default function List({ session, rowsPerPage }) {
 
       setLoading(true);
 
-      const url = `/api/partners/services?id=${row.id}`;
+      const url = `/api/products/services?id=${row.id}`;
       await axios
         .delete(url, config)
         .then((res) => {
@@ -306,11 +311,11 @@ export default function List({ session, rowsPerPage }) {
                 tableId={"products"}
                 records={records}
                 columns={columns}
+                hiddenColumns={hiddenColumns}
                 onItemCheck={onItemCheck}
                 onEdit={openEditProduct}
                 onDelete={openDelProduct}
               />
-
               <Pagination
                 onChangePage={onChangePage}
                 currentPage={page}
@@ -324,7 +329,7 @@ export default function List({ session, rowsPerPage }) {
       </div>
 
       <ModalForm id={"addProductForm"} open={openAdd}>
-        <AddProductForm session={session} onAdd={addProduct} onClose={closeAddProduct} />
+        <AddProductForm onAdd={addProduct} onClose={closeAddProduct} />
       </ModalForm>
 
       <ModalForm id={"editProductForm"} open={openEdit}>

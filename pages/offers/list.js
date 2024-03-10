@@ -88,6 +88,7 @@ export default function List({ session, rowsPerPage }) {
       }
     };
 
+    console.log(mounted.current)
     if (!mounted.current) {
       // do componentDidMount logic
       mounted.current = true;

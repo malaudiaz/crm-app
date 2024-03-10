@@ -1,48 +1,34 @@
 import axios from "axios";
-
 const config = {
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json",
-    "accept-Language": "es-ES,es;"    
+    "accept-Language": "es-ES,es;"
   }
 }
 
-const getProducts = async (req, res) => {
-  const { page, per_page, criteria_key, criteria_value, offer_id } = req.query;
-
-  let url = `${process.env.API_URL}stock/product/products?page=${page}&per_page=${per_page}`;
- 
-  if (offer_id) {
-    url = `${process.env.API_URL}stock/product/offer${offer_id}&page=${page}&per_page=${per_page}`;
-  } else
-  {
-    if (criteria_key && criteria_value) {
-      url =
-        url + `&criteria_key=${criteria_key}&criteria_value=${criteria_value}`;
-    }
-  }
-
+const getMeasures = async (req, res) => {
+  let url = `${process.env.API_URL}stock/measure/measures`;
   try {
     const response = await axios.get(url, config);
     if (response.status == 200) {
-      return res.status(200).json({
-        result: response.data,
-      });
+        return res.status(200).json({
+            result: response.data,
+        });      
     }
   } catch (errors) {
-    return res
-      .status(errors.response.status)
-      .json({ error: errors.response.statusText });
+      return res
+          .status(errors.response.status)
+          .json({ error: errors.response.statusText });
   }
 };
 
-const createProduct = async (req, res) => {
-  const product = req.body;
-  const url = `${process.env.API_URL}stock/product/product`;
+const createOffer = async (req, res) => {
+  const offer = req.body;
+  const url = `${process.env.API_URL}offer`;
 
   try {
-    const response = await axios.post(url, product, config);
+    const response = await axios.post(url, offer, config);
     if (response.status == 200) {
       return res.status(200).json({
         message: response.statusText,
@@ -55,13 +41,13 @@ const createProduct = async (req, res) => {
   }
 };
 
-const updateProduct = async (req, res) => {
+const updateOffer = async (req, res) => {
   const { id } = req.query;
-  const product = req.body;
-  const url = `${process.env.API_URL}stock/product/product/${id}`;
+  const offer = req.body;
+  const url = `${process.env.API_URL}offer/${id}`;
 
   try {
-    const response = await axios.put(url, product, config);
+    const response = await axios.put(url, offer, config);
     if (response.status == 200) {
       return res.status(200).json({
         message: response.statusText,
@@ -74,9 +60,9 @@ const updateProduct = async (req, res) => {
   }
 };
 
-const deleteProduct = async (req, res) => {
+const deleteOffer = async (req, res) => {
   const { id } = req.query;
-  const url = `${process.env.API_URL}stock/product/product/${id}`;
+  const url = `${process.env.API_URL}offer/${id}`;
   try {
     const response = await axios.delete(url, config);
     if (response.status == 200) {
@@ -91,7 +77,7 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-export default async function productmgr(req, res) {
+export default async function offermgr(req, res) {
   if (req.headers["authorization"]) {
     config.headers["Authorization"] = req.headers["authorization"];
 
@@ -102,19 +88,19 @@ export default async function productmgr(req, res) {
     switch (req.method) {
       case "GET":
         // Nuestra lógica de código para el método GET...
-        return getProducts(req, res);
+        return getMeasures(req, res);
         break;
       case "POST":
         // Nuestra lógica de código para el método POST...
-        return createProduct(req, res);
+        return createMeasure(req, res);
         break;
       case "PUT":
         // Nuestra lógica de código para el método PUT...
-        return updateProduct(req, res);
+        return updateMeasure(req, res);
         break;
       case "DELETE":
         // Nuestra lógica de código para el método DELETE...
-        return deleteProduct(req, res);
+        return deleteMeasure(req, res);
         break;
       default:
         res.status(405).json({

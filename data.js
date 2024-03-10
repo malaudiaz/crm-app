@@ -140,3 +140,21 @@ function numFormat(value) {
 };
 
 export {numFormat};
+
+function formatNumber(v) {
+  console.log(v);
+  if (v != null){
+    v = v.toString();
+    v = v.replace(/([^0-9\.]+)/g, '');
+    v = v.replace(/^[\.]/, '');
+    v = v.replace(/[\.][\.]/g, '');
+    v = v.replace(/\.(\d)(\d)(\d)/g, '.$1$2');
+    v = v.replace(/\.(\d{1,2})\./g, '.$1');
+    v = v.toString().split('').reverse().join('').replace(/(\d{3})/g, '$1,');
+    v = v.split('').reverse().join('').replace(/^[\,]/, '');
+  };    
+  
+  return v;
+}  
+
+export { formatNumber };
